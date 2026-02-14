@@ -1,6 +1,6 @@
 // Debug/Testing Mode
 
-export const DEBUG_MODE = true; // Set to false for production
+export const DEBUG_MODE = false; // Set to true for testing
 
 export function applyDebugModifiers(state) {
   if (!DEBUG_MODE) return;
@@ -44,13 +44,16 @@ export function createDebugPanel(state, updateCallback) {
   });
 
   document.getElementById('debug-code-review').addEventListener('click', () => {
-    // Manually trigger code review
-    const { maybeSpawnCodeReview } = require('./code-review.js');
-    // Force spawn by setting high chance temporarily
-    const oldSkill = state.skills.codeReview;
-    state.skills.codeReview = 100; // Force spawn
-    maybeSpawnCodeReview(state);
-    state.skills.codeReview = oldSkill;
+    // Manually add a code review to the queue
+    if (!state.codeReviewQueue) state.codeReviewQueue = [];
+    const questions = [
+      { title: 'Debug Test', code: 'int x = 0;\nprintf("%d", x);', options: [
+        { text: 'Ship it!', correct: false },
+        { text: 'Looks correct', correct: true },
+        { text: 'Needs malloc', correct: false },
+      ], reward: { xp: 50, loc: 100 } }
+    ];
+    state.codeReviewQueue.push({ question: questions[0] });
     updateCallback();
   });
 
