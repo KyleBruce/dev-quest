@@ -1,5 +1,5 @@
 import './style.css';
-import { initState, startGameLoop } from './game.js';
+import { initState, startGameLoop, calculateOfflineEarnings } from './game.js';
 import { doClick, canClick } from './clicker.js';
 import { feedItem } from './tamagotchi.js';
 import { buyUpgrade } from './upgrades.js';
@@ -8,7 +8,7 @@ import { spendSkillPoint, buyEquipment } from './rpg.js';
 import { doPrestige } from './prestige.js';
 import { saveGame } from './save.js';
 import { sfxClick } from './sound.js';
-import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender, showCodeReviewResult, showCodeReviewSpawned } from './ui.js';
+import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender, showCodeReviewResult, showCodeReviewSpawned, showWelcomeBack, showMilestone, updateEnemyWarning } from './ui.js';
 import { shouldShowOnboarding, startOnboarding } from './onboarding.js';
 import { answerCodeReview, skipCodeReview } from './code-review.js';
 import { promote, hireTeamMember } from './career.js';
@@ -37,6 +37,12 @@ initUI(state, handlers);
 
 // Create debug panel
 createDebugPanel(state, updateAll);
+
+// Check for offline earnings
+const offlineEarnings = calculateOfflineEarnings(state);
+if (offlineEarnings) {
+  showWelcomeBack(offlineEarnings);
+}
 
 // Main click button
 document.getElementById('click-btn').addEventListener('click', () => {
@@ -72,6 +78,10 @@ startGameLoop(state, (info) => {
   if (info.leveled) showLevelUp();
   if (info.dmg > 0) showEnemyDamage();
   if (info.codeReviewSpawned) showCodeReviewSpawned();
+  if (info.newMilestones) {
+    for (const m of info.newMilestones) showMilestone(m);
+  }
+  updateEnemyWarning(info.enemyWarning);
 });
 
 // Onboarding

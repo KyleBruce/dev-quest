@@ -971,6 +971,106 @@ html, body {
   text-align: center;
 }
 
+/* Enemy Warning Banner */
+#enemy-warning {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 480px;
+  width: 100%;
+  padding: 8px 16px;
+  background: rgba(248, 81, 73, 0.15);
+  border-bottom: 2px solid var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 150;
+  animation: warningPulse 1s infinite alternate;
+}
+
+#enemy-warning.hidden { display: none; }
+
+.enemy-warning-icon { font-size: 20px; }
+.enemy-warning-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+@keyframes warningPulse {
+  0% { background: rgba(248, 81, 73, 0.1); }
+  100% { background: rgba(248, 81, 73, 0.25); }
+}
+
+/* Welcome Back Overlay */
+#welcome-back-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  backdrop-filter: blur(4px);
+}
+
+#welcome-back-overlay.hidden { display: none; }
+
+#welcome-back-popup {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 24px;
+  width: 280px;
+  text-align: center;
+  animation: popIn 0.3s cubic-bezier(.17,.67,.35,1.2);
+}
+
+.welcome-back-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.welcome-back-detail {
+  font-size: 14px;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.welcome-back-earned {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+
+#welcome-back-btn {
+  padding: 12px 32px;
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--green);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.1s;
+}
+
+#welcome-back-btn:active {
+  transform: scale(0.96);
+  background: rgba(63, 185, 80, 0.2);
+}
+
+/* Milestone flash */
+#screen-flash.flash-milestone {
+  animation: screenFlash 0.6s;
+  background: linear-gradient(135deg, #f0c040, #e0a020);
+}
+
 /* Debug Panel */
 #debug-panel {
   position: fixed;

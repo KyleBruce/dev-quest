@@ -29,7 +29,7 @@ export function getAutoRate(state) {
   else if (mon === 'triple') total *= 1.25;
 
   // Hunger penalty
-  if (state.needs.hunger < 30) total *= 0.5;
+  if (state.needs.hunger < 20) total *= 0.5;
 
   // Prestige multiplier
   total *= state.prestigeMultiplier || 1;
@@ -43,8 +43,8 @@ export function buyUpgrade(state, upgradeId) {
   const owned = state.upgrades[def.id] || 0;
   let cost = getUpgradeCost(def, owned);
 
-  // Happiness penalty: 2x cost below 20
-  if (state.needs.happiness < 20) cost *= 2;
+  // Happiness penalty: 1.5x cost below 10
+  if (state.needs.happiness < 10) cost *= 1.5;
 
   if (state.loc < cost) return false;
   state.loc -= cost;
@@ -54,6 +54,6 @@ export function buyUpgrade(state, upgradeId) {
 
 export function getEffectiveCost(state, def) {
   let cost = getUpgradeCost(def, state.upgrades[def.id] || 0);
-  if (state.needs.happiness < 20) cost *= 2;
+  if (state.needs.happiness < 10) cost *= 1.5;
   return Math.floor(cost);
 }

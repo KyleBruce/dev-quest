@@ -2,6 +2,7 @@ const SAVE_KEY = 'dev-quest-save';
 
 export function saveGame(state) {
   try {
+    state.lastSaveTimestamp = Date.now();
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   } catch { /* quota exceeded, ignore */ }
 }

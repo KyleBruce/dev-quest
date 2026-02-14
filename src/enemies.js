@@ -44,7 +44,15 @@ function defeatEnemy(state) {
   const defeated = state.enemy;
   state.xp += defeated.xp;
   state.enemy = null;
+  state.enemiesDefeated = (state.enemiesDefeated || 0) + 1;
   return defeated;
+}
+
+export function isEnemyApproaching(state) {
+  if (state.enemy) return false;
+  const timer = state.enemyTimer || 0;
+  const next = state.nextEnemyAt || 0;
+  return next > 0 && (next - timer) <= 5 && (next - timer) > 0;
 }
 
 export function enemyDamage(state) {

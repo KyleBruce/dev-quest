@@ -1,5 +1,5 @@
 export function getClickPower(state) {
-  let power = 1;
+  let power = 2;
 
   // Keyboard equipment bonus
   const kb = state.equipment.keyboard;
@@ -15,7 +15,7 @@ export function getClickPower(state) {
   if (state.needs.caffeine > 70) power *= 1.5;
 
   // Hunger penalty: halved below 30
-  if (state.needs.hunger < 30) power *= 0.5;
+  if (state.needs.hunger < 20) power *= 0.5;
 
   // Typing Speed skill: +10% per level
   power *= 1 + state.skills.typingSpeed * 0.1;
@@ -27,7 +27,7 @@ export function getClickPower(state) {
 }
 
 export function canClick(state) {
-  return state.needs.energy >= 10;
+  return state.needs.energy >= 5;
 }
 
 export function doClick(state) {

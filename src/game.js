@@ -1,9 +1,10 @@
 import { decayNeeds } from './tamagotchi.js';
 import { getAutoRate } from './upgrades.js';
-import { maybeSpawnEnemy, enemyDamage, initEnemyTimer } from './enemies.js';
+import { maybeSpawnEnemy, enemyDamage, initEnemyTimer, isEnemyApproaching } from './enemies.js';
 import { checkLevelUp } from './rpg.js';
 import { saveGame, loadGame } from './save.js';
 import { maybeSpawnCodeReview } from './code-review.js';
+import { checkMilestones } from './milestones.js';
 
 export function createDefaultState() {
   return {
@@ -26,7 +27,7 @@ export function createDefaultState() {
     onboardingDone: false,
     // Code Review
     codeReview: null,
-    codeReviewsEnabled: false, // Toggle for code review spawning
+    codeReviewsEnabled: true, // Toggle for code review spawning
     // Career Progression
     careerStage: 'junior',
     projects: 0,
@@ -35,6 +36,9 @@ export function createDefaultState() {
     teamSize: 1,
     teams: 1,
     employees: 1,
+    lastSaveTimestamp: 0,
+    milestones: {},
+    enemiesDefeated: 0,
   };
 }
 
@@ -46,6 +50,19 @@ export function initState() {
     return { ...def, ...saved, needs: { ...def.needs, ...saved.needs }, skills: { ...def.skills, ...saved.skills }, equipment: { ...def.equipment, ...saved.equipment }, upgrades: { ...saved.upgrades } };
   }
   return createDefaultState();
+}
+
+export function calculateOfflineEarnings(state) {
+  if (!state.lastSaveTimestamp) return null;
+  const elapsed = (Date.now() - state.lastSaveTimestamp) / 1000;
+  if (elapsed < 60) return null;
+  const cappedSec = Math.min(elapsed, 28800); // cap at 8 hours
+  const autoRate = getAutoRate(state);
+  if (autoRate <= 0) return null;
+  const earned = cappedSec * autoRate * 0.5;
+  state.loc += earned;
+  state.totalLoc += earned;
+  return { earned, elapsedSec: cappedSec, autoRate };
 }
 
 export function tick(state, onUpdate) {
@@ -73,16 +90,22 @@ export function tick(state, onUpdate) {
   // 5. Level up
   const leveled = checkLevelUp(state);
 
-  // 6. Maybe spawn code review
+  // 6. Check milestones
+  const newMilestones = checkMilestones(state);
+
+  // 7. Maybe spawn code review
   const codeReviewSpawned = maybeSpawnCodeReview(state);
 
-  // 7. Auto-save every 30 ticks
+  // 8. Enemy warning
+  const enemyWarning = isEnemyApproaching(state);
+
+  // 9. Auto-save every 30 ticks
   if (state.tickCount % 30 === 0) {
     saveGame(state);
   }
 
-  // 8. Return info for UI
-  return { napping, dmg, leveled, codeReviewSpawned };
+  // 10. Return info for UI
+  return { napping, dmg, leveled, newMilestones, codeReviewSpawned, enemyWarning };
 }
 
 export function startGameLoop(state, onTick) {

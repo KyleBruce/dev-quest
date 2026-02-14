@@ -10,6 +10,11 @@ const STEPS = [
     action: 'auto', // advance after delay
   },
   {
+    target: '#panel-settings',
+    text: 'Code Reviews pop up as you code — answer correctly for bonus XP and LoC!',
+    action: 'auto',
+  },
+  {
     target: '#tab-bar',
     text: 'Use these tabs to buy upgrades, feed your dev, learn skills, and equip gear. Have fun!',
     action: 'auto',

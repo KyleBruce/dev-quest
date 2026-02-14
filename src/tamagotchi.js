@@ -1,7 +1,7 @@
 export const NEEDS = ['hunger', 'energy', 'happiness', 'caffeine'];
 
 const DECAY = {
-  hunger: 2,
+  hunger: 1,
   energy: 1,
   happiness: 1,
   caffeine: 3,

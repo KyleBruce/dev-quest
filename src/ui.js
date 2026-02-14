@@ -118,13 +118,13 @@ function updateNeeds() {
 
     const el = document.querySelector(`[data-need="${need}"]`);
     const critical =
-      (need === 'hunger' && val < 30) ||
-      (need === 'energy' && val < 10) ||
-      (need === 'happiness' && val < 20);
+      (need === 'hunger' && val < 20) ||
+      (need === 'energy' && val < 5) ||
+      (need === 'happiness' && val < 10);
     const low =
-      (need === 'hunger' && val < 50 && val >= 30) ||
-      (need === 'energy' && val < 30 && val >= 10) ||
-      (need === 'happiness' && val < 40 && val >= 20);
+      (need === 'hunger' && val < 40 && val >= 20) ||
+      (need === 'energy' && val < 20 && val >= 5) ||
+      (need === 'happiness' && val < 30 && val >= 10);
     el.classList.toggle('critical', critical);
     el.classList.toggle('low', low);
   }
@@ -759,6 +759,44 @@ export function showCodeReviewResult(result) {
 
 export function showCodeReviewSpawned() {
   notify('🔍 Code Review Available!', 'notif-item');
+}
+
+// --- Welcome Back ---
+export function showWelcomeBack(earnings) {
+  const overlay = $('welcome-back-overlay');
+  overlay.classList.remove('hidden');
+
+  const hours = Math.floor(earnings.elapsedSec / 3600);
+  const minutes = Math.floor((earnings.elapsedSec % 3600) / 60);
+  const timeText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+  $('welcome-back-time').textContent = `You were away for ${timeText}`;
+  $('welcome-back-earned').textContent = `+${fmt(earnings.earned)} LoC`;
+
+  $('welcome-back-btn').addEventListener('click', () => {
+    overlay.classList.add('hidden');
+    spawnParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 20, '#3fb950');
+    notify(`Collected ${fmt(earnings.earned)} LoC!`, 'notif-level');
+    updateAll();
+  }, { once: true });
+}
+
+// --- Milestone ---
+export function showMilestone(milestone) {
+  screenFlash('flash-milestone');
+  spawnParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 25, '#f0c040');
+  notify(`🏆 ${milestone.name} — ${milestone.desc}`, 'notif-prestige');
+}
+
+// --- Enemy Warning ---
+export function updateEnemyWarning(isApproaching) {
+  const banner = $('enemy-warning');
+  if (!banner) return;
+  if (isApproaching) {
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
 }
 
 // Re-render all panels (used after prestige)
