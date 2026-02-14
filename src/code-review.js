@@ -102,6 +102,312 @@ const CODE_REVIEW_QUESTIONS = [
     ],
     reward: { xp: 110, loc: 220 }
   },
+
+  // --- JavaScript ---
+  {
+    title: 'Equality Gotcha',
+    code: 'if (x == 0) {\n  console.log("falsy!");\n}',
+    options: [
+      { text: 'Works perfectly', correct: false },
+      { text: 'Use === to avoid type coercion', correct: true },
+      { text: 'Should use .equals()', correct: false },
+    ],
+    reward: { xp: 40, loc: 80 }
+  },
+  {
+    title: 'Callback Hell',
+    code: 'getData(function(a) {\n  getMore(a, function(b) {\n    save(b, function(c) {});\n  });\n});',
+    options: [
+      { text: 'Clean and readable', correct: false },
+      { text: 'Refactor to async/await', correct: true },
+      { text: 'Add more callbacks', correct: false },
+    ],
+    reward: { xp: 60, loc: 120 }
+  },
+  {
+    title: 'Variable Hoisting',
+    code: 'console.log(x);\nvar x = 5;',
+    options: [
+      { text: 'Prints 5', correct: false },
+      { text: 'Prints undefined due to hoisting', correct: true },
+      { text: 'Throws ReferenceError', correct: false },
+    ],
+    reward: { xp: 50, loc: 100 }
+  },
+  {
+    title: 'Missing Await',
+    code: 'async function save() {\n  const data = fetch("/api");\n  return data.json();\n}',
+    options: [
+      { text: 'Looks correct', correct: false },
+      { text: 'Need await on fetch()', correct: true },
+      { text: 'Remove async keyword', correct: false },
+    ],
+    reward: { xp: 70, loc: 150 }
+  },
+  {
+    title: 'Closure Trap',
+    code: 'for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 100);\n}',
+    options: [
+      { text: 'Prints 0, 1, 2', correct: false },
+      { text: 'Prints 3, 3, 3 — use let instead', correct: true },
+      { text: 'Prints undefined 3 times', correct: false },
+    ],
+    reward: { xp: 80, loc: 160 }
+  },
+  {
+    title: 'Prototype Pollution',
+    code: 'function merge(target, src) {\n  for (let key in src)\n    target[key] = src[key];\n}',
+    options: [
+      { text: 'Standard merge pattern', correct: false },
+      { text: 'Check hasOwnProperty to prevent pollution', correct: true },
+      { text: 'Use Object.assign instead', correct: false },
+    ],
+    reward: { xp: 100, loc: 200 }
+  },
+  {
+    title: 'Accidental Global',
+    code: 'function calc() {\n  result = 42;\n  return result;\n}',
+    options: [
+      { text: 'Returns 42, all good', correct: false },
+      { text: 'Missing let/const — creates global', correct: true },
+      { text: 'Should use var instead', correct: false },
+    ],
+    reward: { xp: 50, loc: 100 }
+  },
+  {
+    title: 'Array Reference Bug',
+    code: 'const a = [1, 2, 3];\nconst b = a;\nb.push(4);',
+    options: [
+      { text: 'a is still [1,2,3]', correct: false },
+      { text: 'a is now [1,2,3,4] — use spread to copy', correct: true },
+      { text: 'Throws TypeError, const array', correct: false },
+    ],
+    reward: { xp: 60, loc: 120 }
+  },
+  {
+    title: 'parseInt Surprise',
+    code: 'const nums = ["1","2","3"];\nconst result = nums.map(parseInt);',
+    options: [
+      { text: 'Returns [1, 2, 3]', correct: false },
+      { text: 'Returns [1, NaN, NaN] — use Number()', correct: true },
+      { text: 'Throws TypeError', correct: false },
+    ],
+    reward: { xp: 90, loc: 180 }
+  },
+  {
+    title: 'Floating Point',
+    code: 'if (0.1 + 0.2 === 0.3) {\n  console.log("equal!");\n}',
+    options: [
+      { text: 'Prints "equal!"', correct: false },
+      { text: 'Never prints — floating point imprecision', correct: true },
+      { text: 'Syntax error', correct: false },
+    ],
+    reward: { xp: 50, loc: 100 }
+  },
+
+  // --- Python ---
+  {
+    title: 'Mutable Default Arg',
+    code: 'def add_item(item, lst=[]):\n    lst.append(item)\n    return lst',
+    options: [
+      { text: 'Works as expected', correct: false },
+      { text: 'Default list is shared across calls', correct: true },
+      { text: 'Should use tuple instead', correct: false },
+    ],
+    reward: { xp: 70, loc: 150 }
+  },
+  {
+    title: 'Late Binding Closure',
+    code: 'funcs = [lambda: i\n         for i in range(3)]',
+    options: [
+      { text: 'Returns [0, 1, 2]', correct: false },
+      { text: 'All return 2 — late binding', correct: true },
+      { text: 'Throws NameError', correct: false },
+    ],
+    reward: { xp: 80, loc: 160 }
+  },
+  {
+    title: 'Bare Except',
+    code: 'try:\n    do_stuff()\nexcept:\n    pass',
+    options: [
+      { text: 'Safe error handling', correct: false },
+      { text: 'Catches everything including KeyboardInterrupt', correct: true },
+      { text: 'Should use finally instead', correct: false },
+    ],
+    reward: { xp: 50, loc: 100 }
+  },
+  {
+    title: 'Is vs ==',
+    code: 'a = 1000\nb = 1000\nprint(a is b)',
+    options: [
+      { text: 'Always True', correct: false },
+      { text: 'Use == for value comparison, not is', correct: true },
+      { text: 'Throws TypeError', correct: false },
+    ],
+    reward: { xp: 40, loc: 80 }
+  },
+  {
+    title: 'Shadowed Builtin',
+    code: 'list = [1, 2, 3]\ndata = list("hello")',
+    options: [
+      { text: 'Creates ["h","e","l","l","o"]', correct: false },
+      { text: 'TypeError — list was shadowed', correct: true },
+      { text: 'Need to import list first', correct: false },
+    ],
+    reward: { xp: 60, loc: 120 }
+  },
+  {
+    title: 'Unintended Reference',
+    code: 'matrix = [[0]*3] * 3\nmatrix[0][0] = 1',
+    options: [
+      { text: 'Only matrix[0][0] is 1', correct: false },
+      { text: 'All rows share the same list', correct: true },
+      { text: 'IndexError', correct: false },
+    ],
+    reward: { xp: 90, loc: 180 }
+  },
+  {
+    title: 'String Immutability',
+    code: 's = "hello"\ns[0] = "H"',
+    options: [
+      { text: 'Changes s to "Hello"', correct: false },
+      { text: 'TypeError — strings are immutable', correct: true },
+      { text: 'Need to use s.replace()', correct: false },
+    ],
+    reward: { xp: 40, loc: 80 }
+  },
+  {
+    title: 'Scope Trap',
+    code: 'x = 10\ndef foo():\n    x += 1\n    return x',
+    options: [
+      { text: 'Returns 11', correct: false },
+      { text: 'UnboundLocalError — need global or nonlocal', correct: true },
+      { text: 'Returns 10', correct: false },
+    ],
+    reward: { xp: 70, loc: 140 }
+  },
+  {
+    title: 'Chained Comparison',
+    code: 'x = 5\nprint(1 < x > 3)',
+    options: [
+      { text: 'Syntax error', correct: false },
+      { text: 'True — Python chains comparisons', correct: true },
+      { text: 'False', correct: false },
+    ],
+    reward: { xp: 50, loc: 100 }
+  },
+  {
+    title: 'Dictionary Iteration',
+    code: 'data = {"a": 1, "b": 2}\nfor k, v in data:\n    print(k, v)',
+    options: [
+      { text: 'Prints key-value pairs', correct: false },
+      { text: 'Need data.items() to unpack pairs', correct: true },
+      { text: 'Need enumerate(data)', correct: false },
+    ],
+    reward: { xp: 60, loc: 120 }
+  },
+
+  // --- SQL ---
+  {
+    title: 'SQL Injection',
+    code: 'query = "SELECT * FROM users\n  WHERE name = \'" + input + "\'";',
+    options: [
+      { text: 'Simple and efficient', correct: false },
+      { text: 'Use parameterized queries', correct: true },
+      { text: 'Just escape the quotes', correct: false },
+    ],
+    reward: { xp: 100, loc: 200 }
+  },
+  {
+    title: 'SELECT *',
+    code: 'SELECT * FROM orders\n  JOIN products\n  JOIN users;',
+    options: [
+      { text: 'Gets all the data we need', correct: false },
+      { text: 'Select only needed columns', correct: true },
+      { text: 'Add more JOINs', correct: false },
+    ],
+    reward: { xp: 40, loc: 80 }
+  },
+  {
+    title: 'Missing WHERE',
+    code: 'UPDATE users\n  SET role = \'admin\';',
+    options: [
+      { text: 'Promotes one user to admin', correct: false },
+      { text: 'Updates ALL rows — needs WHERE clause', correct: true },
+      { text: 'Should use INSERT instead', correct: false },
+    ],
+    reward: { xp: 120, loc: 250 }
+  },
+  {
+    title: 'NULL Comparison',
+    code: 'SELECT * FROM users\n  WHERE email != NULL;',
+    options: [
+      { text: 'Returns users with emails', correct: false },
+      { text: 'Use IS NOT NULL instead', correct: true },
+      { text: 'Use <> NULL', correct: false },
+    ],
+    reward: { xp: 50, loc: 100 }
+  },
+  {
+    title: 'GROUP BY Error',
+    code: 'SELECT name, COUNT(*)\n  FROM orders;',
+    options: [
+      { text: 'Counts all orders per name', correct: false },
+      { text: 'Need GROUP BY name', correct: true },
+      { text: 'Use SUM instead', correct: false },
+    ],
+    reward: { xp: 60, loc: 120 }
+  },
+  {
+    title: 'N+1 Query',
+    code: 'for user in users:\n  db.query("SELECT * FROM orders\n    WHERE user_id=" + user.id)',
+    options: [
+      { text: 'Gets orders for each user', correct: false },
+      { text: 'Use a single JOIN query instead', correct: true },
+      { text: 'Add an index', correct: false },
+    ],
+    reward: { xp: 90, loc: 180 }
+  },
+  {
+    title: 'DELETE Without WHERE',
+    code: 'DELETE FROM sessions;',
+    options: [
+      { text: 'Cleans up old sessions', correct: false },
+      { text: 'Deletes ALL sessions — add WHERE clause', correct: true },
+      { text: 'Use DROP TABLE instead', correct: false },
+    ],
+    reward: { xp: 110, loc: 220 }
+  },
+  {
+    title: 'Implicit Cross Join',
+    code: 'SELECT * FROM a, b\n  WHERE a.x = 1;',
+    options: [
+      { text: 'Filters table a correctly', correct: false },
+      { text: 'Creates a cross join — use explicit JOIN', correct: true },
+      { text: 'Need to alias the tables', correct: false },
+    ],
+    reward: { xp: 70, loc: 140 }
+  },
+  {
+    title: 'LIKE Without Index',
+    code: 'SELECT * FROM products\n  WHERE name LIKE \'%widget%\';',
+    options: [
+      { text: 'Fast text search', correct: false },
+      { text: 'Leading wildcard prevents index use', correct: true },
+      { text: 'Use = instead of LIKE', correct: false },
+    ],
+    reward: { xp: 80, loc: 160 }
+  },
+  {
+    title: 'OR vs UNION',
+    code: 'SELECT * FROM logs\n  WHERE status = \'error\'\n  OR user_id = 42;',
+    options: [
+      { text: 'Efficient query', correct: false },
+      { text: 'OR can prevent index use — consider UNION', correct: true },
+      { text: 'Use AND instead', correct: false },
+    ],
+    reward: { xp: 70, loc: 140 }
+  },
 ];
 
 export function maybeSpawnCodeReview(state) {

@@ -11,7 +11,7 @@ const STEPS = [
   },
   {
     target: '#panel-settings',
-    text: 'Code Reviews pop up as you code — answer correctly for bonus XP and LoC!',
+    text: 'Code Reviews queue up as you code — answer correctly for bonus XP and LoC!',
     action: 'auto',
   },
   {
