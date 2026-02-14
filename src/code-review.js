@@ -108,12 +108,15 @@ export function maybeSpawnCodeReview(state) {
   // Don't spawn if disabled
   if (!state.codeReviewsEnabled) return false;
 
-  // Don't spawn during nap or if one is active
+  // Don't spawn during nap
   if (state.napUntil && Date.now() < state.napUntil) return false;
-  if (state.codeReview) return false;
+
+  // Cap queue at 5
+  if (!state.codeReviewQueue) state.codeReviewQueue = [];
+  if (state.codeReviewQueue.length >= 5) return false;
 
   // Spawn chance based on Code Review skill
-  let baseChance = 0.02; // 2% per tick
+  let baseChance = 0.005; // 0.5% per tick
   const debugChance = getDebugCodeReviewChance();
   if (debugChance !== null) baseChance = debugChance;
 
@@ -122,14 +125,23 @@ export function maybeSpawnCodeReview(state) {
 
   if (Math.random() < chance) {
     const question = CODE_REVIEW_QUESTIONS[Math.floor(Math.random() * CODE_REVIEW_QUESTIONS.length)];
-    state.codeReview = {
-      question,
-      startTime: Date.now(),
-      timeLimit: 30000, // 30 seconds
-    };
+    state.codeReviewQueue.push({ question });
     return true;
   }
   return false;
+}
+
+export function startCodeReview(state) {
+  if (!state.codeReviewQueue || state.codeReviewQueue.length === 0) return false;
+  if (state.codeReview) return false; // one already active
+
+  const queued = state.codeReviewQueue.shift();
+  state.codeReview = {
+    question: queued.question,
+    startTime: Date.now(),
+    timeLimit: 30000, // 30 seconds
+  };
+  return true;
 }
 
 export function answerCodeReview(state, answerIndex) {

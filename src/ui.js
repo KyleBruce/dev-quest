@@ -643,17 +643,6 @@ function renderSettings() {
       <div class="panel-header">Settings</div>
 
       <div class="settings-section">
-        <div class="section-title">Gameplay</div>
-        <div class="setting-row">
-          <label class="setting-label">
-            <input type="checkbox" id="code-reviews-toggle" ${state.codeReviewsEnabled ? 'checked' : ''}>
-            <span>Enable Code Reviews</span>
-          </label>
-          <div class="setting-desc">Toggle automatic C code review popups</div>
-        </div>
-      </div>
-
-      <div class="settings-section">
         <div class="section-title">Save Management</div>
         <div class="setting-row">
           <div class="setting-buttons">
@@ -667,15 +656,6 @@ function renderSettings() {
       </div>
     </div>
   `;
-
-  // Wire up code reviews toggle
-  const codeReviewToggle = $('code-reviews-toggle');
-  if (codeReviewToggle) {
-    codeReviewToggle.addEventListener('change', (e) => {
-      state.codeReviewsEnabled = e.target.checked;
-      notify(state.codeReviewsEnabled ? '🔍 Code Reviews Enabled' : '🔍 Code Reviews Disabled');
-    });
-  }
 
   // Wire up export save button
   const exportBtn = $('export-save-btn');
@@ -737,6 +717,15 @@ function renderSettings() {
 
 // --- Code Review ---
 export function updateCodeReview() {
+  // Update the queue button
+  const queueBtn = $('code-review-btn');
+  if (queueBtn) {
+    const queueLen = (state.codeReviewQueue || []).length;
+    queueBtn.classList.remove('hidden');
+    queueBtn.textContent = `🔍 Code Review (${queueLen})`;
+    queueBtn.disabled = queueLen === 0;
+  }
+
   const overlay = $('code-review-overlay');
   if (!isCodeReviewActive(state)) {
     overlay.classList.add('hidden');
@@ -762,6 +751,7 @@ export function updateCodeReview() {
       if (handlers.answerCodeReview) {
         const result = handlers.answerCodeReview(index);
         showCodeReviewResult(result);
+        updateAll();
       }
     });
     optionsContainer.appendChild(btn);
@@ -778,10 +768,6 @@ export function showCodeReviewResult(result) {
   } else {
     notify('❌ Incorrect. Better luck next time!', 'notif-enemy');
   }
-}
-
-export function showCodeReviewSpawned() {
-  notify('🔍 Code Review Available!', 'notif-item');
 }
 
 // --- Welcome Back ---

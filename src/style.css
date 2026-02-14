@@ -179,6 +179,38 @@ html, body {
   color: var(--dim);
 }
 
+.code-review-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 2px solid #f0c040;
+  background: rgba(240, 192, 64, 0.1);
+  color: #f0c040;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+  animation: crPulse 2s ease-in-out infinite;
+}
+
+.code-review-btn:active:not(:disabled) {
+  transform: scale(0.95);
+  background: rgba(240, 192, 64, 0.25);
+}
+
+.code-review-btn:disabled {
+  border-color: var(--dim);
+  color: var(--dim);
+  background: transparent;
+  cursor: default;
+  animation: none;
+  box-shadow: none;
+}
+
+@keyframes crPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(240, 192, 64, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(240, 192, 64, 0.5); }
+}
+
 /* Needs bars */
 #needs-bar {
   display: flex;
