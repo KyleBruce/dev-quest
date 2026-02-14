@@ -4,6 +4,8 @@ import { getClickPower, canClick } from './clicker.js';
 import { SKILL_DEFS, EQUIPMENT_DEFS, getTitle, xpForLevel } from './rpg.js';
 import { canPrestige, getPrestigeCost, getPrestigeMultiplier, getPrestigeLanguage } from './prestige.js';
 import { sfxBuy, sfxFeed, sfxEnemyHit, sfxEnemyDefeat, sfxEnemySpawn, sfxLevelUp, sfxPrestige } from './sound.js';
+import { isCodeReviewActive } from './code-review.js';
+import { getCurrentStage, getNextStage, canPromote } from './career.js';
 
 let state;
 let handlers = {};
@@ -35,6 +37,7 @@ export function initUI(gameState, eventHandlers) {
   renderItems();
   renderSkills();
   renderEquipment();
+  renderCareer();
   renderPrestige();
   setupTabs();
   updateAll();
@@ -69,7 +72,9 @@ export function updateAll() {
   updateItemAffordability();
   updateSkills();
   updateEquipment();
+  updateCareer();
   updateEnemy();
+  updateCodeReview();
   updateBurnout();
   updatePrestige();
 }
@@ -515,12 +520,150 @@ function spawnParticleBurst(x, y, count, color) {
   }
 }
 
+// --- Career Progression ---
+function renderCareer() {
+  const panel = $('panel-career');
+  if (!panel) return;
+
+  const current = getCurrentStage(state);
+  const next = getNextStage(state);
+
+  panel.innerHTML = `
+    <div class="career-info">
+      <div class="career-current">
+        <div class="career-icon">${current.emoji}</div>
+        <div class="career-title">${current.name}</div>
+        <div class="career-currency">Currency: ${current.currency}</div>
+      </div>
+  `;
+
+  if (next) {
+    const canUpgrade = canPromote(state);
+    panel.innerHTML += `
+      <div class="career-arrow">⬇️</div>
+      <div class="career-next">
+        <div class="career-icon">${next.emoji}</div>
+        <div class="career-title">${next.name}</div>
+        <div class="career-currency">Currency: ${next.currency}</div>
+        <div class="career-unlock">Unlocks at Level ${next.minLevel}</div>
+      </div>
+      <button id="promote-btn" type="button" ${canUpgrade ? '' : 'disabled'}>
+        Promote to ${next.name}
+      </button>
+      <div class="career-desc">
+        ${canUpgrade ? next.unlockMessage : `Reach level ${next.minLevel} to unlock`}
+      </div>
+    `;
+  } else {
+    panel.innerHTML += `<div class="career-max">You've reached the highest career stage!</div>`;
+  }
+
+  // Team management for Senior+
+  if (current.id !== 'junior') {
+    const teamSize = state.teamSize || 1;
+    const hireCost = Math.floor(10 * Math.pow(1.5, teamSize));
+    panel.innerHTML += `
+      <div class="team-section">
+        <div class="panel-header">Team Management</div>
+        <div class="team-size">Team Size: ${teamSize}</div>
+        <button id="hire-btn" type="button">Hire Developer (${hireCost} ${current.currency})</button>
+      </div>
+    `;
+  }
+
+  panel.innerHTML += `</div>`;
+
+  // Wire up promote button
+  const promoteBtn = $('promote-btn');
+  if (promoteBtn) {
+    promoteBtn.addEventListener('click', () => {
+      if (handlers.promote()) {
+        sfxPrestige();
+        screenFlash('flash-prestige');
+        notify(`Promoted to ${next.name}!`, 'notif-prestige');
+        renderCareer();
+        updateAll();
+      }
+    });
+  }
+
+  // Wire up hire button
+  const hireBtn = $('hire-btn');
+  if (hireBtn) {
+    hireBtn.addEventListener('click', () => {
+      if (handlers.hireTeamMember()) {
+        sfxBuy();
+        notify('Hired a new team member!');
+        renderCareer();
+        updateAll();
+      }
+    });
+  }
+}
+
+function updateCareer() {
+  const promoteBtn = $('promote-btn');
+  if (promoteBtn) {
+    promoteBtn.disabled = !canPromote(state);
+  }
+}
+
+// --- Code Review ---
+export function updateCodeReview() {
+  const overlay = $('code-review-overlay');
+  if (!isCodeReviewActive(state)) {
+    overlay.classList.add('hidden');
+    return;
+  }
+
+  overlay.classList.remove('hidden');
+  const review = state.codeReview;
+  const elapsed = Date.now() - review.startTime;
+  const remaining = Math.max(0, Math.ceil((review.timeLimit - elapsed) / 1000));
+
+  $('code-review-title').textContent = review.question.title;
+  $('code-review-timer').textContent = `⏱️ ${remaining}s`;
+  $('code-review-code').textContent = review.question.code;
+
+  const optionsContainer = $('code-review-options');
+  optionsContainer.innerHTML = '';
+  review.question.options.forEach((option, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'code-review-option';
+    btn.textContent = option.text;
+    btn.addEventListener('click', () => {
+      if (handlers.answerCodeReview) {
+        const result = handlers.answerCodeReview(index);
+        showCodeReviewResult(result);
+      }
+    });
+    optionsContainer.appendChild(btn);
+  });
+}
+
+export function showCodeReviewResult(result) {
+  if (!result) return;
+
+  if (result.correct) {
+    const bonusText = result.bonus > 1.5 ? ' 🔥 FAST!' : '';
+    notify(`✅ Correct! +${result.xp}XP +${result.loc}LoC${bonusText}`, 'notif-level');
+    screenFlash('flash-level');
+  } else {
+    notify('❌ Incorrect. Better luck next time!', 'notif-enemy');
+  }
+}
+
+export function showCodeReviewSpawned() {
+  notify('🔍 Code Review Available!', 'notif-item');
+}
+
 // Re-render all panels (used after prestige)
 export function fullRerender() {
   renderShop();
   renderItems();
   renderSkills();
   renderEquipment();
+  renderCareer();
   renderPrestige();
   updateAll();
 }

@@ -65,6 +65,7 @@
       <button class="tab" data-tab="items">🎒 Items</button>
       <button class="tab" data-tab="skills">⚔️ Skills</button>
       <button class="tab" data-tab="equip">🛡️ Equip</button>
+      <button class="tab" data-tab="career">💼 Career</button>
       <button class="tab" data-tab="prestige">🔄 Rewrite</button>
     </nav>
 
@@ -74,6 +75,7 @@
       <div id="panel-items" class="panel"></div>
       <div id="panel-skills" class="panel"></div>
       <div id="panel-equip" class="panel"></div>
+      <div id="panel-career" class="panel"></div>
       <div id="panel-prestige" class="panel"></div>
     </section>
 
@@ -98,6 +100,20 @@
         <div id="enemy-flavor"></div>
         <div id="enemy-damage-warn"></div>
         <button id="enemy-btn" type="button">TAP TO FIGHT!</button>
+      </div>
+    </div>
+
+    <!-- Code Review overlay -->
+    <div id="code-review-overlay" class="hidden">
+      <div id="code-review-popup">
+        <div class="code-review-header">
+          <span class="code-review-icon">🔍</span>
+          <span id="code-review-title"></span>
+          <span id="code-review-timer"></span>
+        </div>
+        <pre id="code-review-code"></pre>
+        <div id="code-review-options"></div>
+        <button id="code-review-skip" type="button" class="skip-btn">Skip</button>
       </div>
     </div>
   </div>

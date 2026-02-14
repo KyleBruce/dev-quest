@@ -669,3 +669,208 @@ html, body {
   box-shadow: 0 0 0 4px var(--accent), 0 0 20px rgba(88,166,255,.4);
   border-radius: 8px;
 }
+
+/* Code Review Overlay */
+#code-review-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  backdrop-filter: blur(4px);
+}
+
+#code-review-overlay.hidden { display: none; }
+
+#code-review-popup {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.code-review-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.code-review-icon {
+  font-size: 24px;
+}
+
+#code-review-title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+#code-review-timer {
+  font-size: 14px;
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+#code-review-code {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--green);
+  margin-bottom: 16px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+#code-review-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.code-review-option {
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.code-review-option:hover {
+  border-color: var(--accent);
+  background: rgba(88,166,255,.1);
+  transform: scale(1.02);
+}
+
+.code-review-option:active {
+  transform: scale(0.98);
+}
+
+.skip-btn {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--dim);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.skip-btn:hover {
+  color: var(--text);
+  border-color: var(--dim);
+}
+
+/* Career Progression */
+.career-info {
+  padding: 12px;
+}
+
+.career-current, .career-next {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.career-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.career-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.career-currency {
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.career-unlock {
+  font-size: 12px;
+  color: var(--yellow);
+  margin-top: 4px;
+}
+
+.career-arrow {
+  text-align: center;
+  font-size: 24px;
+  margin: 8px 0;
+}
+
+#promote-btn, #hire-btn {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: rgba(88,166,255,.1);
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+#promote-btn:hover, #hire-btn:hover {
+  background: rgba(88,166,255,.2);
+  transform: scale(1.02);
+}
+
+#promote-btn:active, #hire-btn:active {
+  transform: scale(0.98);
+}
+
+#promote-btn:disabled, #hire-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.career-desc {
+  font-size: 13px;
+  color: var(--dim);
+  text-align: center;
+  padding: 8px;
+  background: var(--bg);
+  border-radius: 8px;
+}
+
+.career-max {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: var(--green);
+}
+
+.team-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--border);
+}
+
+.team-size {
+  font-size: 14px;
+  color: var(--dim);
+  margin-bottom: 12px;
+  text-align: center;
+}

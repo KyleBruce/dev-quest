@@ -3,6 +3,7 @@ import { getAutoRate } from './upgrades.js';
 import { maybeSpawnEnemy, enemyDamage, initEnemyTimer } from './enemies.js';
 import { checkLevelUp } from './rpg.js';
 import { saveGame, loadGame } from './save.js';
+import { maybeSpawnCodeReview } from './code-review.js';
 
 export function createDefaultState() {
   return {
@@ -23,6 +24,16 @@ export function createDefaultState() {
     prestigeCount: 0,
     prestigeMultiplier: 1,
     onboardingDone: false,
+    // Code Review
+    codeReview: null,
+    // Career Progression
+    careerStage: 'junior',
+    projects: 0,
+    products: 0,
+    companyValue: 0,
+    teamSize: 1,
+    teams: 1,
+    employees: 1,
   };
 }
 
@@ -61,13 +72,16 @@ export function tick(state, onUpdate) {
   // 5. Level up
   const leveled = checkLevelUp(state);
 
-  // 6. Auto-save every 30 ticks
+  // 6. Maybe spawn code review
+  const codeReviewSpawned = maybeSpawnCodeReview(state);
+
+  // 7. Auto-save every 30 ticks
   if (state.tickCount % 30 === 0) {
     saveGame(state);
   }
 
-  // 7. Return info for UI
-  return { napping, dmg, leveled };
+  // 8. Return info for UI
+  return { napping, dmg, leveled, codeReviewSpawned };
 }
 
 export function startGameLoop(state, onTick) {

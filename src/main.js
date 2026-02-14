@@ -8,8 +8,10 @@ import { spendSkillPoint, buyEquipment } from './rpg.js';
 import { doPrestige } from './prestige.js';
 import { saveGame } from './save.js';
 import { sfxClick } from './sound.js';
-import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender } from './ui.js';
+import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender, showCodeReviewResult, showCodeReviewSpawned } from './ui.js';
 import { shouldShowOnboarding, startOnboarding } from './onboarding.js';
+import { answerCodeReview, skipCodeReview } from './code-review.js';
+import { promote, hireTeamMember } from './career.js';
 
 // Init state
 const state = initState();
@@ -21,6 +23,9 @@ const handlers = {
   spendSkillPoint: (id) => spendSkillPoint(state, id),
   buyEquipment: (slot, id) => buyEquipment(state, slot, id),
   prestige: () => doPrestige(state),
+  answerCodeReview: (index) => answerCodeReview(state, index),
+  promote: () => promote(state),
+  hireTeamMember: () => hireTeamMember(state),
 };
 
 // Init UI
@@ -48,11 +53,18 @@ document.getElementById('enemy-btn').addEventListener('click', () => {
   }
 });
 
+// Code review skip button
+document.getElementById('code-review-skip').addEventListener('click', () => {
+  skipCodeReview(state);
+  updateAll();
+});
+
 // Game loop
 startGameLoop(state, (info) => {
   updateAll();
   if (info.leveled) showLevelUp();
   if (info.dmg > 0) showEnemyDamage();
+  if (info.codeReviewSpawned) showCodeReviewSpawned();
 });
 
 // Onboarding
