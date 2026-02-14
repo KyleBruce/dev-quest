@@ -411,9 +411,6 @@ const CODE_REVIEW_QUESTIONS = [
 ];
 
 export function maybeSpawnCodeReview(state) {
-  // Don't spawn if disabled
-  if (!state.codeReviewsEnabled) return false;
-
   // Don't spawn during nap
   if (state.napUntil && Date.now() < state.napUntil) return false;
 
@@ -422,7 +419,7 @@ export function maybeSpawnCodeReview(state) {
   if (state.codeReviewQueue.length >= 5) return false;
 
   // Spawn chance based on Code Review skill
-  let baseChance = 0.005; // 0.5% per tick
+  let baseChance = 0.025; // 2.5% per tick
   const debugChance = getDebugCodeReviewChance();
   if (debugChance !== null) baseChance = debugChance;
 

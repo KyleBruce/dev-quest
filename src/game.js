@@ -29,7 +29,6 @@ export function createDefaultState() {
     // Code Review
     codeReview: null,
     codeReviewQueue: [],
-    codeReviewsEnabled: true, // Toggle for code review spawning
     // Career Progression
     careerStage: 'junior',
     projects: 0,
