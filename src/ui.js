@@ -39,6 +39,7 @@ export function initUI(gameState, eventHandlers) {
   renderSkills();
   renderEquipment();
   renderCareer();
+  renderSettings();
   renderPrestige();
   setupTabs();
   updateAll();
@@ -531,23 +532,6 @@ function renderCareer() {
 
   panel.innerHTML = `
     <div class="career-info">
-      <div class="settings-section">
-        <div class="panel-header">Settings</div>
-        <div class="setting-row">
-          <label class="setting-label">
-            <input type="checkbox" id="code-reviews-toggle" ${state.codeReviewsEnabled ? 'checked' : ''}>
-            <span>Enable Code Reviews</span>
-          </label>
-          <div class="setting-desc">Toggle automatic code review popups</div>
-        </div>
-        <div class="setting-row">
-          <div class="setting-buttons">
-            <button id="export-save-btn" type="button" class="setting-btn">📥 Export Save</button>
-            <button id="import-save-btn" type="button" class="setting-btn">📤 Import Save</button>
-            <button id="reset-game-btn" type="button" class="setting-btn danger">🔄 Reset Game</button>
-          </div>
-        </div>
-      </div>
       <div class="career-current">
         <div class="career-icon">${current.emoji}</div>
         <div class="career-title">${current.name}</div>
@@ -591,6 +575,76 @@ function renderCareer() {
 
   panel.innerHTML += `</div>`;
 
+  // Wire up promote button
+  const promoteBtn = $('promote-btn');
+  if (promoteBtn) {
+    promoteBtn.addEventListener('click', () => {
+      if (handlers.promote()) {
+        sfxPrestige();
+        screenFlash('flash-prestige');
+        notify(`Promoted to ${next.name}!`, 'notif-prestige');
+        renderCareer();
+        updateAll();
+      }
+    });
+  }
+
+  // Wire up hire button
+  const hireBtn = $('hire-btn');
+  if (hireBtn) {
+    hireBtn.addEventListener('click', () => {
+      if (handlers.hireTeamMember()) {
+        sfxBuy();
+        notify('Hired a new team member!');
+        renderCareer();
+        updateAll();
+      }
+    });
+  }
+}
+
+function updateCareer() {
+  const promoteBtn = $('promote-btn');
+  if (promoteBtn) {
+    promoteBtn.disabled = !canPromote(state);
+  }
+}
+
+// --- Settings ---
+function renderSettings() {
+  const panel = $('panel-settings');
+  if (!panel) return;
+
+  panel.innerHTML = `
+    <div class="settings-container">
+      <div class="panel-header">Settings</div>
+
+      <div class="settings-section">
+        <div class="section-title">Gameplay</div>
+        <div class="setting-row">
+          <label class="setting-label">
+            <input type="checkbox" id="code-reviews-toggle" ${state.codeReviewsEnabled ? 'checked' : ''}>
+            <span>Enable Code Reviews</span>
+          </label>
+          <div class="setting-desc">Toggle automatic C code review popups</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-title">Save Management</div>
+        <div class="setting-row">
+          <div class="setting-buttons">
+            <button id="export-save-btn" type="button" class="setting-btn">📥 Export Save</button>
+            <button id="import-save-btn" type="button" class="setting-btn">📤 Import Save</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <button id="reset-game-btn" type="button" class="setting-btn danger full-width">🔄 Reset Game</button>
+        </div>
+      </div>
+    </div>
+  `;
+
   // Wire up code reviews toggle
   const codeReviewToggle = $('code-reviews-toggle');
   if (codeReviewToggle) {
@@ -606,7 +660,6 @@ function renderCareer() {
     exportBtn.addEventListener('click', () => {
       const saveData = exportSave();
       if (saveData) {
-        // Create downloadable file
         const blob = new Blob([saveData], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -656,40 +709,6 @@ function renderCareer() {
         resetGame();
       }
     });
-  }
-
-  // Wire up promote button
-  const promoteBtn = $('promote-btn');
-  if (promoteBtn) {
-    promoteBtn.addEventListener('click', () => {
-      if (handlers.promote()) {
-        sfxPrestige();
-        screenFlash('flash-prestige');
-        notify(`Promoted to ${next.name}!`, 'notif-prestige');
-        renderCareer();
-        updateAll();
-      }
-    });
-  }
-
-  // Wire up hire button
-  const hireBtn = $('hire-btn');
-  if (hireBtn) {
-    hireBtn.addEventListener('click', () => {
-      if (handlers.hireTeamMember()) {
-        sfxBuy();
-        notify('Hired a new team member!');
-        renderCareer();
-        updateAll();
-      }
-    });
-  }
-}
-
-function updateCareer() {
-  const promoteBtn = $('promote-btn');
-  if (promoteBtn) {
-    promoteBtn.disabled = !canPromote(state);
   }
 }
 
@@ -749,6 +768,7 @@ export function fullRerender() {
   renderSkills();
   renderEquipment();
   renderCareer();
+  renderSettings();
   renderPrestige();
   updateAll();
 }

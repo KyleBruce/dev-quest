@@ -10,7 +10,7 @@ export const TITLES = [
 
 export const SKILL_DEFS = [
   { id: 'typingSpeed',       name: 'Typing Speed',       emoji: '⌨️', desc: '+10% click power per level' },
-  { id: 'codeReview',        name: 'Code Review',        emoji: '👁️', desc: '+10% auto-click output per level' },
+  { id: 'codeReview',        name: 'Automation',         emoji: '🤖', desc: '+10% auto-output per level' },
   { id: 'bugResistance',     name: 'Bug Resistance',     emoji: '🛡️', desc: 'Enemies deal 10% less damage per level' },
   { id: 'caffeineMetabolism', name: 'Caffeine Metabolism', emoji: '☕', desc: 'Caffeine decays 15% slower per level' },
 ];

@@ -780,12 +780,25 @@ html, body {
   padding: 12px;
 }
 
+.settings-container {
+  padding: 12px;
+}
+
 .settings-section {
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 12px;
   margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 
 .setting-row {
@@ -857,6 +870,10 @@ html, body {
 .setting-btn.danger:hover {
   background: rgba(248,81,73,.1);
   border-color: var(--red);
+}
+
+.setting-btn.full-width {
+  width: 100%;
 }
 
 .career-current, .career-next {

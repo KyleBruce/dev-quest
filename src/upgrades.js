@@ -20,7 +20,7 @@ export function getAutoRate(state) {
     total += def.baseLoc * count;
   }
 
-  // Code Review skill: +10% per level
+  // Automation skill: +10% per level
   total *= 1 + state.skills.codeReview * 0.1;
 
   // Monitor bonus
