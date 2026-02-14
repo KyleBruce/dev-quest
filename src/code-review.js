@@ -75,6 +75,9 @@ const CODE_REVIEW_QUESTIONS = [
 ];
 
 export function maybeSpawnCodeReview(state) {
+  // Don't spawn if disabled
+  if (!state.codeReviewsEnabled) return false;
+
   // Don't spawn during nap or if one is active
   if (state.napUntil && Date.now() < state.napUntil) return false;
   if (state.codeReview) return false;

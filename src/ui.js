@@ -530,6 +530,16 @@ function renderCareer() {
 
   panel.innerHTML = `
     <div class="career-info">
+      <div class="settings-section">
+        <div class="panel-header">Settings</div>
+        <div class="setting-row">
+          <label class="setting-label">
+            <input type="checkbox" id="code-reviews-toggle" ${state.codeReviewsEnabled ? 'checked' : ''}>
+            <span>Enable Code Reviews</span>
+          </label>
+          <div class="setting-desc">Toggle automatic code review popups</div>
+        </div>
+      </div>
       <div class="career-current">
         <div class="career-icon">${current.emoji}</div>
         <div class="career-title">${current.name}</div>
@@ -572,6 +582,15 @@ function renderCareer() {
   }
 
   panel.innerHTML += `</div>`;
+
+  // Wire up code reviews toggle
+  const codeReviewToggle = $('code-reviews-toggle');
+  if (codeReviewToggle) {
+    codeReviewToggle.addEventListener('change', (e) => {
+      state.codeReviewsEnabled = e.target.checked;
+      notify(state.codeReviewsEnabled ? '🔍 Code Reviews Enabled' : '🔍 Code Reviews Disabled');
+    });
+  }
 
   // Wire up promote button
   const promoteBtn = $('promote-btn');
