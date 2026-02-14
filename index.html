@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#58a6ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Dev Quest</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Character header -->
+    <header id="header">
+      <div class="char-info">
+        <span id="char-emoji">🧑‍💻</span>
+        <span id="char-title">"Junior Dev"</span>
+        <span id="char-level">Lv.1</span>
+      </div>
+      <div class="xp-bar-wrap">
+        <div id="xp-bar" class="bar-fill" style="width:0%"></div>
+        <span id="xp-text">XP: 0/100</span>
+      </div>
+    </header>
+
+    <!-- Main clicker area -->
+    <section id="clicker-area">
+      <div id="loc-display">
+        <span class="loc-icon">📝</span>
+        <span id="loc-count">0</span>
+        <span class="loc-label">LoC</span>
+      </div>
+      <button id="click-btn" type="button">TAP TO CODE</button>
+      <div id="auto-rate">+0.0 LoC/sec</div>
+    </section>
+
+    <!-- Needs bars -->
+    <section id="needs-bar">
+      <div class="need" data-need="hunger">
+        <span class="need-icon">🍕</span>
+        <div class="need-bar-wrap"><div id="bar-hunger" class="bar-fill need-fill" style="width:100%"></div></div>
+        <span id="val-hunger" class="need-val">100</span>
+      </div>
+      <div class="need" data-need="energy">
+        <span class="need-icon">⚡</span>
+        <div class="need-bar-wrap"><div id="bar-energy" class="bar-fill need-fill" style="width:100%"></div></div>
+        <span id="val-energy" class="need-val">100</span>
+      </div>
+      <div class="need" data-need="happiness">
+        <span class="need-icon">😊</span>
+        <div class="need-bar-wrap"><div id="bar-happiness" class="bar-fill need-fill" style="width:100%"></div></div>
+        <span id="val-happiness" class="need-val">100</span>
+      </div>
+      <div class="need" data-need="caffeine">
+        <span class="need-icon">☕</span>
+        <div class="need-bar-wrap"><div id="bar-caffeine" class="bar-fill need-fill" style="width:100%"></div></div>
+        <span id="val-caffeine" class="need-val">0</span>
+      </div>
+    </section>
+
+    <!-- Tab bar -->
+    <nav id="tab-bar">
+      <button class="tab active" data-tab="shop">🛒 Shop</button>
+      <button class="tab" data-tab="items">🎒 Items</button>
+      <button class="tab" data-tab="skills">⚔️ Skills</button>
+      <button class="tab" data-tab="equip">🛡️ Equip</button>
+      <button class="tab" data-tab="prestige">🔄 Rewrite</button>
+    </nav>
+
+    <!-- Tab panels -->
+    <section id="tab-content">
+      <div id="panel-shop" class="panel active"></div>
+      <div id="panel-items" class="panel"></div>
+      <div id="panel-skills" class="panel"></div>
+      <div id="panel-equip" class="panel"></div>
+      <div id="panel-prestige" class="panel"></div>
+    </section>
+
+    <!-- Notification area -->
+    <div id="notifications"></div>
+
+    <!-- Screen flash overlay for juice -->
+    <div id="screen-flash"></div>
+
+    <!-- Particles container -->
+    <div id="particles"></div>
+
+    <!-- Enemy overlay -->
+    <div id="enemy-overlay" class="hidden">
+      <div id="enemy-popup">
+        <div id="enemy-emoji" class="enemy-icon"></div>
+        <div id="enemy-name"></div>
+        <div class="enemy-hp-wrap">
+          <div id="enemy-hp-bar" class="bar-fill"></div>
+        </div>
+        <div id="enemy-hp-text"></div>
+        <div id="enemy-flavor"></div>
+        <div id="enemy-damage-warn"></div>
+        <button id="enemy-btn" type="button">TAP TO FIGHT!</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

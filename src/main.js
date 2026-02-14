@@ -1,0 +1,74 @@
+import './style.css';
+import { initState, startGameLoop } from './game.js';
+import { doClick, canClick } from './clicker.js';
+import { feedItem } from './tamagotchi.js';
+import { buyUpgrade } from './upgrades.js';
+import { hitEnemy } from './enemies.js';
+import { spendSkillPoint, buyEquipment } from './rpg.js';
+import { doPrestige } from './prestige.js';
+import { saveGame } from './save.js';
+import { sfxClick } from './sound.js';
+import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender } from './ui.js';
+import { shouldShowOnboarding, startOnboarding } from './onboarding.js';
+
+// Init state
+const state = initState();
+
+// Event handlers passed to UI
+const handlers = {
+  buyUpgrade: (id) => buyUpgrade(state, id),
+  feedItem: (id) => feedItem(state, id),
+  spendSkillPoint: (id) => spendSkillPoint(state, id),
+  buyEquipment: (slot, id) => buyEquipment(state, slot, id),
+  prestige: () => doPrestige(state),
+};
+
+// Init UI
+initUI(state, handlers);
+
+// Main click button
+document.getElementById('click-btn').addEventListener('click', () => {
+  if (state.napUntil && Date.now() < state.napUntil) return;
+  const amount = doClick(state);
+  if (amount > 0) {
+    sfxClick();
+    showClickFloat(amount);
+    updateAll();
+  }
+});
+
+// Enemy fight button
+document.getElementById('enemy-btn').addEventListener('click', () => {
+  showEnemyHit();
+  const defeated = hitEnemy(state);
+  updateEnemy();
+  if (defeated) {
+    showEnemyDefeated(defeated);
+    updateAll();
+  }
+});
+
+// Game loop
+startGameLoop(state, (info) => {
+  updateAll();
+  if (info.leveled) showLevelUp();
+  if (info.dmg > 0) showEnemyDamage();
+});
+
+// Onboarding
+if (shouldShowOnboarding(state)) {
+  startOnboarding(() => {
+    state.onboardingDone = true;
+    saveGame(state);
+  });
+}
+
+// Save on page hide
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) saveGame(state);
+});
+
+// PWA service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
