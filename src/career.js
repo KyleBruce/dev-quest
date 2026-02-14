@@ -93,22 +93,30 @@ function getConversionRate(fromStage) {
   return rates[fromStage] || 10000;
 }
 
-// Team management for Senior+ stages
-export function getTeamProductivity(state) {
-  const stage = getCurrentStage(state);
-  if (stage.id === 'junior') return 1;
-
-  const teamSize = state.teamSize || 1;
-  const baseProductivity = teamSize * 0.5; // Each team member adds 50% productivity
-
-  // Equipment bonuses apply to team
+// Equipment + prestige multiplier for career currency generation
+export function getCareerMultiplier(state) {
   let multiplier = 1;
   if (state.equipment.keyboard === 'mechanical') multiplier *= 1.2;
   if (state.equipment.keyboard === 'ergonomic') multiplier *= 1.1;
   if (state.equipment.monitor === 'ultrawide') multiplier *= 1.15;
   if (state.equipment.monitor === 'triple') multiplier *= 1.25;
+  multiplier *= state.prestigeMultiplier || 1;
+  return multiplier;
+}
 
-  return baseProductivity * multiplier;
+// Returns { key, currency, rate } for passive career currency generation, or null
+export function getCareerRate(state) {
+  const stage = getCurrentStage(state);
+  const multiplier = getCareerMultiplier(state);
+
+  if (stage.id === 'senior') {
+    return { key: 'projects', currency: 'Projects', rate: (state.teamSize || 1) * 0.1 * multiplier };
+  } else if (stage.id === 'lead') {
+    return { key: 'products', currency: 'Products', rate: (state.teams || 1) * 0.02 * multiplier };
+  } else if (stage.id === 'cto') {
+    return { key: 'companyValue', currency: 'Company Value', rate: (state.employees || 1) * 0.005 * multiplier };
+  }
+  return null;
 }
 
 export function hireTeamMember(state) {

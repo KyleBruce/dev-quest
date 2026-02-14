@@ -5,6 +5,7 @@ import { checkLevelUp } from './rpg.js';
 import { saveGame, loadGame } from './save.js';
 import { maybeSpawnCodeReview } from './code-review.js';
 import { checkMilestones } from './milestones.js';
+import { getCareerRate } from './career.js';
 
 export function createDefaultState() {
   return {
@@ -81,6 +82,12 @@ export function tick(state, onUpdate) {
     state.totalLoc += autoRate;
   }
 
+  // 2b. Career currency generation
+  const careerIncome = getCareerRate(state);
+  if (careerIncome) {
+    state[careerIncome.key] += careerIncome.rate;
+  }
+
   // 3. Maybe spawn enemy
   maybeSpawnEnemy(state);
 
@@ -105,7 +112,7 @@ export function tick(state, onUpdate) {
   }
 
   // 10. Return info for UI
-  return { napping, dmg, leveled, newMilestones, codeReviewSpawned, enemyWarning };
+  return { napping, dmg, leveled, newMilestones, codeReviewSpawned, enemyWarning, careerIncome };
 }
 
 export function startGameLoop(state, onTick) {

@@ -44,5 +44,14 @@ export function doPrestige(state) {
   state.napUntil = 0;
   state.tickCount = 0;
 
+  // Reset career progression
+  state.careerStage = 'junior';
+  state.projects = 0;
+  state.products = 0;
+  state.companyValue = 0;
+  state.teamSize = 1;
+  state.teams = 1;
+  state.employees = 1;
+
   return true;
 }

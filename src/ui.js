@@ -5,7 +5,7 @@ import { SKILL_DEFS, EQUIPMENT_DEFS, getTitle, xpForLevel } from './rpg.js';
 import { canPrestige, getPrestigeCost, getPrestigeMultiplier, getPrestigeLanguage } from './prestige.js';
 import { sfxBuy, sfxFeed, sfxEnemyHit, sfxEnemyDefeat, sfxEnemySpawn, sfxLevelUp, sfxPrestige } from './sound.js';
 import { isCodeReviewActive } from './code-review.js';
-import { getCurrentStage, getNextStage, canPromote } from './career.js';
+import { getCurrentStage, getNextStage, canPromote, getCareerRate } from './career.js';
 import { exportSave, importSave, resetGame } from './save.js';
 
 let state;
@@ -560,8 +560,20 @@ function renderCareer() {
     panel.innerHTML += `<div class="career-max">You've reached the highest career stage!</div>`;
   }
 
-  // Team management for Senior+
+  // Currency balance + rate for Senior+
   if (current.id !== 'junior') {
+    const careerIncome = getCareerRate(state);
+    const balanceKey = careerIncome ? careerIncome.key : 'projects';
+    const balanceVal = state[balanceKey] || 0;
+    const rateText = careerIncome ? `+${careerIncome.rate.toFixed(2)} ${careerIncome.currency}/sec` : '';
+
+    panel.innerHTML += `
+      <div class="career-balance">
+        <div class="career-balance-val" id="career-balance-val">${current.currency}: ${fmt(balanceVal)}</div>
+        <div class="career-balance-rate" id="career-balance-rate">${rateText}</div>
+      </div>
+    `;
+
     const teamSize = state.teamSize || 1;
     const hireCost = Math.floor(10 * Math.pow(1.5, teamSize));
     panel.innerHTML += `
@@ -607,6 +619,17 @@ function updateCareer() {
   const promoteBtn = $('promote-btn');
   if (promoteBtn) {
     promoteBtn.disabled = !canPromote(state);
+  }
+
+  // Update career currency balance and rate
+  const careerIncome = getCareerRate(state);
+  const balanceEl = $('career-balance-val');
+  const rateEl = $('career-balance-rate');
+  if (balanceEl && careerIncome) {
+    balanceEl.textContent = `${careerIncome.currency}: ${fmt(state[careerIncome.key] || 0)}`;
+  }
+  if (rateEl && careerIncome) {
+    rateEl.textContent = `+${careerIncome.rate.toFixed(2)} ${careerIncome.currency}/sec`;
   }
 }
 
