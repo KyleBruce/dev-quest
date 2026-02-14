@@ -2,7 +2,7 @@ export const ENEMY_DEFS = [
   { id: 'manager',    name: 'Middle Manager',    emoji: '👔', hp: 5,  dps: 10, xp: 15,  flavor: 'Requests a meeting about the meeting.' },
   { id: 'it',         name: 'IT Department',      emoji: '🖥️', hp: 10, dps: 20, xp: 30,  flavor: 'Your access has been revoked.' },
   { id: 'scopecreep', name: 'Scope Creep Goblin', emoji: '👺', hp: 8,  dps: 15, xp: 25,  flavor: 'Just one more feature...' },
-  { id: 'legacy',     name: 'Legacy Code Dragon', emoji: '🐉', hp: 30, dps: 50, xp: 100, flavor: 'Written in COBOL. By a wizard. In 1987.' },
+  { id: 'legacy',     name: 'Legacy Code Dragon', emoji: '🐉', hp: 18, dps: 40, xp: 100, flavor: 'Written in COBOL. By a wizard. In 1987.' },
   { id: 'deploy',     name: 'Deployment Demon',   emoji: '😈', hp: 15, dps: 30, xp: 50,  flavor: 'It worked on my machine.' },
   { id: 'refactorer', name: 'The Refactorer',     emoji: '🔧', hp: 20, dps: 40, xp: 75,  flavor: 'Rewrites your code in Rust. Uninvited.' },
 ];

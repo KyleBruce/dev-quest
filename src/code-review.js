@@ -163,8 +163,11 @@ export function answerCodeReview(state, answerIndex) {
     const timeBonus = Math.max(1, 2 - elapsed / state.codeReview.timeLimit);
     result.bonus = timeBonus;
 
-    result.xp = Math.floor(question.reward.xp * timeBonus);
-    result.loc = Math.floor(question.reward.loc * timeBonus);
+    // Level scaling: rewards grow with player level
+    const levelScale = 1 + (state.level - 1) * 0.15;
+
+    result.xp = Math.floor(question.reward.xp * timeBonus * levelScale);
+    result.loc = Math.floor(question.reward.loc * timeBonus * levelScale);
 
     state.xp += result.xp;
     state.loc += result.loc;

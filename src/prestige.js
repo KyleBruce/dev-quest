@@ -6,7 +6,7 @@ const LANGUAGES = [
 
 // Minimum totalLoc to prestige (scales with prestige count)
 export function getPrestigeCost(prestigeCount) {
-  return Math.floor(50000 * Math.pow(2.5, prestigeCount));
+  return Math.floor(50000 * Math.pow(2.0, prestigeCount));
 }
 
 // Multiplier from prestige: each prestige gives +50% compounding

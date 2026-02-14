@@ -110,11 +110,11 @@ export function getCareerRate(state) {
   const multiplier = getCareerMultiplier(state);
 
   if (stage.id === 'senior') {
-    return { key: 'projects', currency: 'Projects', rate: (state.teamSize || 1) * 0.1 * multiplier };
+    return { key: 'projects', currency: 'Projects', rate: (state.teamSize || 1) * 0.3 * multiplier };
   } else if (stage.id === 'lead') {
-    return { key: 'products', currency: 'Products', rate: (state.teams || 1) * 0.02 * multiplier };
+    return { key: 'products', currency: 'Products', rate: (state.teams || 1) * 0.06 * multiplier };
   } else if (stage.id === 'cto') {
-    return { key: 'companyValue', currency: 'Company Value', rate: (state.employees || 1) * 0.005 * multiplier };
+    return { key: 'companyValue', currency: 'Company Value', rate: (state.employees || 1) * 0.015 * multiplier };
   }
   return null;
 }

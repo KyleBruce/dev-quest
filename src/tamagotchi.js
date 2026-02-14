@@ -1,10 +1,10 @@
 export const NEEDS = ['hunger', 'energy', 'happiness', 'caffeine'];
 
 const DECAY = {
-  hunger: 1,
-  energy: 1,
-  happiness: 1,
-  caffeine: 3,
+  hunger: 0.6,
+  energy: 0.6,
+  happiness: 0.6,
+  caffeine: 2,
 };
 
 export const FEED_ITEMS = [
