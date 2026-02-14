@@ -819,6 +819,46 @@ html, body {
   margin-top: 2px;
 }
 
+.setting-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.setting-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.setting-btn:hover {
+  border-color: var(--accent);
+  background: rgba(88,166,255,.1);
+  transform: scale(1.02);
+}
+
+.setting-btn:active {
+  transform: scale(0.98);
+}
+
+.setting-btn.danger {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.setting-btn.danger:hover {
+  background: rgba(248,81,73,.1);
+  border-color: var(--red);
+}
+
 .career-current, .career-next {
   background: var(--surface);
   border: 2px solid var(--border);

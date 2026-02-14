@@ -6,6 +6,7 @@ import { canPrestige, getPrestigeCost, getPrestigeMultiplier, getPrestigeLanguag
 import { sfxBuy, sfxFeed, sfxEnemyHit, sfxEnemyDefeat, sfxEnemySpawn, sfxLevelUp, sfxPrestige } from './sound.js';
 import { isCodeReviewActive } from './code-review.js';
 import { getCurrentStage, getNextStage, canPromote } from './career.js';
+import { exportSave, importSave, resetGame } from './save.js';
 
 let state;
 let handlers = {};
@@ -539,6 +540,13 @@ function renderCareer() {
           </label>
           <div class="setting-desc">Toggle automatic code review popups</div>
         </div>
+        <div class="setting-row">
+          <div class="setting-buttons">
+            <button id="export-save-btn" type="button" class="setting-btn">📥 Export Save</button>
+            <button id="import-save-btn" type="button" class="setting-btn">📤 Import Save</button>
+            <button id="reset-game-btn" type="button" class="setting-btn danger">🔄 Reset Game</button>
+          </div>
+        </div>
       </div>
       <div class="career-current">
         <div class="career-icon">${current.emoji}</div>
@@ -589,6 +597,64 @@ function renderCareer() {
     codeReviewToggle.addEventListener('change', (e) => {
       state.codeReviewsEnabled = e.target.checked;
       notify(state.codeReviewsEnabled ? '🔍 Code Reviews Enabled' : '🔍 Code Reviews Disabled');
+    });
+  }
+
+  // Wire up export save button
+  const exportBtn = $('export-save-btn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const saveData = exportSave();
+      if (saveData) {
+        // Create downloadable file
+        const blob = new Blob([saveData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dev-quest-save-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        notify('💾 Save exported!');
+      } else {
+        notify('❌ No save data found');
+      }
+    });
+  }
+
+  // Wire up import save button
+  const importBtn = $('import-save-btn');
+  if (importBtn) {
+    importBtn.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const success = importSave(event.target.result);
+            if (success) {
+              notify('✅ Save imported! Reloading...');
+              setTimeout(() => window.location.reload(), 1000);
+            } else {
+              notify('❌ Invalid save file');
+            }
+          };
+          reader.readAsText(file);
+        }
+      };
+      input.click();
+    });
+  }
+
+  // Wire up reset game button
+  const resetBtn = $('reset-game-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (confirm('⚠️ Reset all progress? This cannot be undone!')) {
+        resetGame();
+      }
     });
   }
 
