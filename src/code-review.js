@@ -3,74 +3,104 @@ import { DEBUG_MODE, getDebugCodeReviewChance } from './debug.js';
 
 const CODE_REVIEW_QUESTIONS = [
   {
-    title: 'Missing Null Check',
-    code: 'function getUser(id) {\n  return users[id].name;\n}',
+    title: 'Buffer Overflow',
+    code: 'char buffer[10];\nstrcpy(buffer, user_input);',
     options: [
       { text: 'Ship it!', correct: false },
-      { text: 'Add null check for users[id]', correct: true },
-      { text: 'Use var instead of function', correct: false },
+      { text: 'Use strncpy with size limit', correct: true },
+      { text: 'Make buffer bigger', correct: false },
     ],
     reward: { xp: 50, loc: 100 }
   },
   {
-    title: 'Infinite Loop',
-    code: 'let i = 0;\nwhile (i < 10) {\n  console.log(i);\n}',
+    title: 'Missing Null Terminator',
+    code: 'char str[5];\nfor(int i = 0; i < 5; i++)\n  str[i] = \'a\';',
     options: [
       { text: 'Looks good', correct: false },
-      { text: 'Missing i++ increment', correct: true },
-      { text: 'Should use for loop', correct: false },
+      { text: 'Need str[4] = \'\\0\'', correct: true },
+      { text: 'Should use malloc', correct: false },
     ],
     reward: { xp: 40, loc: 80 }
   },
   {
-    title: 'Async/Await Error',
-    code: 'function loadData() {\n  const data = await fetch(url);\n  return data;\n}',
+    title: 'Memory Leak',
+    code: 'void foo() {\n  int *ptr = malloc(100);\n  ptr[0] = 42;\n}',
     options: [
       { text: 'Perfect code', correct: false },
-      { text: 'Function must be async', correct: true },
-      { text: 'Should use .then() instead', correct: false },
+      { text: 'Missing free(ptr)', correct: true },
+      { text: 'Should use calloc', correct: false },
     ],
     reward: { xp: 60, loc: 120 }
   },
   {
-    title: 'Memory Leak',
-    code: 'setInterval(() => {\n  const data = fetchLargeData();\n  process(data);\n}, 1000);',
+    title: 'Uninitialized Variable',
+    code: 'int sum;\nfor(int i = 0; i < 10; i++)\n  sum += i;',
     options: [
       { text: 'No issues here', correct: false },
-      { text: 'Should store interval ID to clear it', correct: true },
-      { text: 'Use setTimeout instead', correct: false },
+      { text: 'sum must be initialized to 0', correct: true },
+      { text: 'Use sum = malloc(sizeof(int))', correct: false },
     ],
     reward: { xp: 70, loc: 150 }
   },
   {
-    title: 'Race Condition',
-    code: 'let count = 0;\narray.forEach(async item => {\n  count += await process(item);\n});',
+    title: 'Dangling Pointer',
+    code: 'int *ptr = malloc(10);\nfree(ptr);\n*ptr = 5;',
     options: [
       { text: 'LGTM', correct: false },
-      { text: 'forEach ignores async, use for...of', correct: true },
-      { text: 'count should be var', correct: false },
+      { text: 'Using ptr after free() is undefined', correct: true },
+      { text: 'Just need ptr = NULL first', correct: false },
     ],
     reward: { xp: 80, loc: 200 }
   },
   {
-    title: 'SQL Injection',
-    code: 'const query = `SELECT * FROM users\n  WHERE name = "${userName}"`;\ndb.exec(query);',
+    title: 'Array Out of Bounds',
+    code: 'int arr[10];\nfor(int i = 0; i <= 10; i++)\n  arr[i] = i;',
     options: [
       { text: 'Approve PR', correct: false },
-      { text: 'Use parameterized query', correct: true },
-      { text: 'Add semicolon at end', correct: false },
+      { text: 'Change i <= 10 to i < 10', correct: true },
+      { text: 'Make array bigger', correct: false },
     ],
     reward: { xp: 100, loc: 250 }
   },
   {
-    title: 'Type Coercion Bug',
-    code: 'function add(a, b) {\n  return a + b;\n}\nadd("5", 3); // expects 8',
+    title: 'Integer Overflow',
+    code: 'int a = 2147483647;\nint b = a + 1;\nprintf("%d", b);',
     options: [
-      { text: 'Works fine', correct: false },
-      { text: 'Convert strings to numbers first', correct: true },
-      { text: 'Use - instead of +', correct: false },
+      { text: 'Works fine, prints 2147483648', correct: false },
+      { text: 'Undefined behavior, integer overflow', correct: true },
+      { text: 'Just use float instead', correct: false },
     ],
     reward: { xp: 50, loc: 100 }
+  },
+  {
+    title: 'Pointer Arithmetic Error',
+    code: 'int arr[5] = {1,2,3,4,5};\nint *p = arr;\nprintf("%d", *(p + 5));',
+    options: [
+      { text: 'Prints 5', correct: false },
+      { text: 'Out of bounds access', correct: true },
+      { text: 'Need p = &arr first', correct: false },
+    ],
+    reward: { xp: 90, loc: 180 }
+  },
+  {
+    title: 'Format String Vulnerability',
+    code: 'char *user = get_input();\nprintf(user);',
+    options: [
+      { text: 'Safe and simple', correct: false },
+      { text: 'Use printf("%s", user)', correct: true },
+      { text: 'Use puts(user) instead', correct: false },
+    ],
+    reward: { xp: 120, loc: 240 }
+  },
+  {
+    title: 'Double Free',
+    code: 'int *p = malloc(10);\nfree(p);\nfree(p);',
+    options: [
+      { text: 'Harmless, just frees twice', correct: false },
+      { text: 'Undefined behavior, double free', correct: true },
+      { text: 'Should be free(&p)', correct: false },
+    ],
+    reward: { xp: 110, loc: 220 }
   },
 ];
 

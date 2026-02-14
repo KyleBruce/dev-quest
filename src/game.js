@@ -26,7 +26,7 @@ export function createDefaultState() {
     onboardingDone: false,
     // Code Review
     codeReview: null,
-    codeReviewsEnabled: true, // Toggle for code review spawning
+    codeReviewsEnabled: false, // Toggle for code review spawning
     // Career Progression
     careerStage: 'junior',
     projects: 0,
