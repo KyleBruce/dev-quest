@@ -1103,6 +1103,85 @@ html, body {
   background: linear-gradient(135deg, #f0c040, #e0a020);
 }
 
+/* Stats panel */
+.stats-grid {
+  margin: 8px 0 12px;
+  flex-wrap: wrap;
+}
+
+.milestone-category {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 10px 0 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+
+.milestone-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.milestone-row.achieved {
+  opacity: 1;
+}
+
+.milestone-row:not(.achieved) {
+  opacity: 0.7;
+}
+
+.milestone-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.milestone-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.milestone-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.milestone-row.achieved .milestone-name {
+  color: var(--green);
+}
+
+.milestone-desc {
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.milestone-progress-wrap {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.milestone-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.milestone-progress-text {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 2px;
+}
+
 /* Debug Panel */
 #debug-panel {
   position: fixed;

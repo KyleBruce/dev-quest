@@ -5,6 +5,7 @@ import { SKILL_DEFS, EQUIPMENT_DEFS, getTitle, xpForLevel } from './rpg.js';
 import { canPrestige, getPrestigeCost, getPrestigeMultiplier, getPrestigeLanguage } from './prestige.js';
 import { sfxBuy, sfxFeed, sfxEnemyHit, sfxEnemyDefeat, sfxEnemySpawn, sfxLevelUp, sfxPrestige } from './sound.js';
 import { isCodeReviewActive } from './code-review.js';
+import { MILESTONE_DEFS, getMilestoneValue } from './milestones.js';
 import { getCurrentStage, getNextStage, canPromote, getCareerRate } from './career.js';
 import { exportSave, importSave, resetGame } from './save.js';
 
@@ -41,6 +42,7 @@ export function initUI(gameState, eventHandlers) {
   renderCareer();
   renderSettings();
   renderPrestige();
+  renderStats();
   setupTabs();
   updateAll();
 }
@@ -79,6 +81,7 @@ export function updateAll() {
   updateCodeReview();
   updateBurnout();
   updatePrestige();
+  updateStats();
 }
 
 function updateHeader() {
@@ -633,6 +636,107 @@ function updateCareer() {
   }
 }
 
+// --- Stats / Achievements ---
+const CATEGORY_LABELS = {
+  loc: '📝 Lines of Code',
+  level: '⬆️ Level',
+  upgrades: '🛒 Upgrades',
+  prestige: '🔄 Prestige',
+  kills: '🐛 Kills',
+};
+
+function renderStats() {
+  const panel = $('panel-stats');
+  if (!panel) return;
+
+  // Stats grid
+  let html = `
+    <div class="prestige-stats stats-grid">
+      <div class="prestige-stat">
+        <div class="prestige-stat-val" id="stat-total-loc">${fmt(state.totalLoc || 0)}</div>
+        <div class="prestige-stat-label">Total LoC</div>
+      </div>
+      <div class="prestige-stat">
+        <div class="prestige-stat-val" id="stat-level">${state.level}</div>
+        <div class="prestige-stat-label">Level</div>
+      </div>
+      <div class="prestige-stat">
+        <div class="prestige-stat-val" id="stat-enemies">${state.enemiesDefeated || 0}</div>
+        <div class="prestige-stat-label">Bugs Squashed</div>
+      </div>
+      <div class="prestige-stat">
+        <div class="prestige-stat-val" id="stat-prestiges">${state.prestigeCount || 0}</div>
+        <div class="prestige-stat-label">Rewrites</div>
+      </div>
+    </div>
+    <div class="panel-header">Milestones</div>
+  `;
+
+  // Group milestones by category
+  const grouped = {};
+  for (const def of MILESTONE_DEFS) {
+    if (!grouped[def.category]) grouped[def.category] = [];
+    grouped[def.category].push(def);
+  }
+
+  for (const [cat, defs] of Object.entries(grouped)) {
+    html += `<div class="milestone-category">${CATEGORY_LABELS[cat] || cat}</div>`;
+    for (const def of defs) {
+      const achieved = !!(state.milestones && state.milestones[def.id]);
+      const current = getMilestoneValue(state, def);
+      const pct = Math.min(100, (current / def.threshold) * 100);
+      html += `
+        <div class="milestone-row ${achieved ? 'achieved' : ''}" data-milestone="${def.id}">
+          <span class="milestone-icon">${achieved ? '✅' : '🔒'}</span>
+          <div class="milestone-info">
+            <div class="milestone-name">${def.name}</div>
+            <div class="milestone-desc">${def.desc}</div>
+            ${!achieved ? `<div class="milestone-progress-wrap"><div class="milestone-progress-bar" style="width:${pct}%"></div></div>
+            <div class="milestone-progress-text">${fmt(current)} / ${fmt(def.threshold)}</div>` : ''}
+          </div>
+        </div>`;
+    }
+  }
+
+  panel.innerHTML = html;
+}
+
+function updateStats() {
+  // Update stat values
+  const totalLoc = $('stat-total-loc');
+  if (totalLoc) totalLoc.textContent = fmt(state.totalLoc || 0);
+  const level = $('stat-level');
+  if (level) level.textContent = state.level;
+  const enemies = $('stat-enemies');
+  if (enemies) enemies.textContent = state.enemiesDefeated || 0;
+  const prestiges = $('stat-prestiges');
+  if (prestiges) prestiges.textContent = state.prestigeCount || 0;
+
+  // Update milestone rows
+  for (const def of MILESTONE_DEFS) {
+    const row = document.querySelector(`.milestone-row[data-milestone="${def.id}"]`);
+    if (!row) continue;
+    const achieved = !!(state.milestones && state.milestones[def.id]);
+    const wasAchieved = row.classList.contains('achieved');
+    if (achieved && !wasAchieved) {
+      row.classList.add('achieved');
+      row.querySelector('.milestone-icon').textContent = '✅';
+      // Remove progress bar
+      const progressWrap = row.querySelector('.milestone-progress-wrap');
+      if (progressWrap) progressWrap.remove();
+      const progressText = row.querySelector('.milestone-progress-text');
+      if (progressText) progressText.remove();
+    } else if (!achieved) {
+      const current = getMilestoneValue(state, def);
+      const pct = Math.min(100, (current / def.threshold) * 100);
+      const bar = row.querySelector('.milestone-progress-bar');
+      if (bar) bar.style.width = pct + '%';
+      const text = row.querySelector('.milestone-progress-text');
+      if (text) text.textContent = `${fmt(current)} / ${fmt(def.threshold)}`;
+    }
+  }
+}
+
 // --- Settings ---
 function renderSettings() {
   const panel = $('panel-settings');
@@ -817,5 +921,6 @@ export function fullRerender() {
   renderCareer();
   renderSettings();
   renderPrestige();
+  renderStats();
   updateAll();
 }
