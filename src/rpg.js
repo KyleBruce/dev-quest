@@ -30,7 +30,11 @@ export const EQUIPMENT_DEFS = {
   ],
 };
 
+import { DEBUG_MODE, getDebugXpForLevel } from './debug.js';
+
 export function xpForLevel(level) {
+  const debugXp = getDebugXpForLevel(level);
+  if (debugXp !== null) return debugXp;
   return Math.floor(100 * Math.pow(1.3, level - 1));
 }
 

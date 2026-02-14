@@ -12,9 +12,13 @@ import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemy
 import { shouldShowOnboarding, startOnboarding } from './onboarding.js';
 import { answerCodeReview, skipCodeReview } from './code-review.js';
 import { promote, hireTeamMember } from './career.js';
+import { DEBUG_MODE, applyDebugModifiers, createDebugPanel } from './debug.js';
 
 // Init state
 const state = initState();
+
+// Apply debug modifiers
+applyDebugModifiers(state);
 
 // Event handlers passed to UI
 const handlers = {
@@ -30,6 +34,9 @@ const handlers = {
 
 // Init UI
 initUI(state, handlers);
+
+// Create debug panel
+createDebugPanel(state, updateAll);
 
 // Main click button
 document.getElementById('click-btn').addEventListener('click', () => {

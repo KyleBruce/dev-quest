@@ -1,4 +1,5 @@
 // Code Review Minigame
+import { DEBUG_MODE, getDebugCodeReviewChance } from './debug.js';
 
 const CODE_REVIEW_QUESTIONS = [
   {
@@ -79,7 +80,10 @@ export function maybeSpawnCodeReview(state) {
   if (state.codeReview) return false;
 
   // Spawn chance based on Code Review skill
-  const baseChance = 0.02; // 2% per tick
+  let baseChance = 0.02; // 2% per tick
+  const debugChance = getDebugCodeReviewChance();
+  if (debugChance !== null) baseChance = debugChance;
+
   const skillBonus = state.skills.codeReview * 0.01; // +1% per skill level
   const chance = baseChance + skillBonus;
 
