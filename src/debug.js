@@ -1,4 +1,5 @@
 // Debug/Testing Mode
+import { STANDUP_PROMPTS } from './standup.js';
 
 export const DEBUG_MODE = false; // Set to true for testing
 
@@ -23,6 +24,7 @@ export function createDebugPanel(state, updateCallback) {
       <button id="debug-level-up">+10 Levels</button>
       <button id="debug-add-loc">+10k LoC</button>
       <button id="debug-code-review">Trigger Code Review</button>
+      <button id="debug-standup">Trigger Standup</button>
       <button id="debug-add-xp">+1000 XP</button>
       <button id="debug-max-needs">Max Needs</button>
       <button id="debug-add-skillpoints">+5 Skill Points</button>
@@ -54,6 +56,13 @@ export function createDebugPanel(state, updateCallback) {
       ], reward: { xp: 50, loc: 100 } }
     ];
     state.codeReviewQueue.push({ question: questions[0] });
+    updateCallback();
+  });
+
+  document.getElementById('debug-standup').addEventListener('click', () => {
+    if (!state.standupQueue) state.standupQueue = [];
+    const prompt = STANDUP_PROMPTS[Math.floor(Math.random() * STANDUP_PROMPTS.length)];
+    state.standupQueue.push({ prompt });
     updateCallback();
   });
 

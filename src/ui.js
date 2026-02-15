@@ -5,6 +5,7 @@ import { SKILL_DEFS, EQUIPMENT_DEFS, getTitle, xpForLevel } from './rpg.js';
 import { canPrestige, getPrestigeCost, getPrestigeMultiplier, getPrestigeLanguage } from './prestige.js';
 import { sfxBuy, sfxFeed, sfxEnemyHit, sfxEnemyDefeat, sfxEnemySpawn, sfxLevelUp, sfxPrestige } from './sound.js';
 import { isCodeReviewActive } from './code-review.js';
+import { isStandupActive } from './standup.js';
 import { MILESTONE_DEFS, getMilestoneValue } from './milestones.js';
 import { getCurrentStage, getNextStage, canPromote, getCareerRate } from './career.js';
 import { exportSave, importSave, resetGame } from './save.js';
@@ -79,6 +80,7 @@ export function updateAll() {
   updateCareer();
   updateEnemy();
   updateCodeReview();
+  updateStandup();
   updateBurnout();
   updatePrestige();
   updateStats();
@@ -149,26 +151,38 @@ function renderShop() {
   const panel = $('panel-shop');
   panel.innerHTML = '<div class="panel-header">Auto-coders</div>';
   for (const def of UPGRADE_DEFS) {
+    const locked = state.level < (def.minLevel || 1);
     const row = document.createElement('div');
-    row.className = 'shop-row';
+    row.className = 'shop-row' + (locked ? ' locked' : '');
     row.dataset.id = def.id;
-    row.innerHTML = `
-      <span class="row-icon">${def.emoji}</span>
-      <div class="row-info">
-        <div class="row-name">${def.name} <span class="row-owned">(×${state.upgrades[def.id] || 0})</span></div>
-        <div class="row-desc">${def.flavor}</div>
-      </div>
-      <div class="row-cost">${fmt(getEffectiveCost(state, def))} LoC</div>
-    `;
-    row.addEventListener('click', () => {
-      if (handlers.buyUpgrade(def.id)) {
-        sfxBuy();
-        flashRow(row);
-        renderShop();
-        updateAll();
-        notify(`Hired ${def.name}!`);
-      }
-    });
+    if (locked) {
+      row.innerHTML = `
+        <span class="row-icon">${def.emoji}</span>
+        <div class="row-info">
+          <div class="row-name">${def.name}</div>
+          <div class="row-desc">🔒 Unlocks at Lv.${def.minLevel}</div>
+        </div>
+        <div class="row-cost"></div>
+      `;
+    } else {
+      row.innerHTML = `
+        <span class="row-icon">${def.emoji}</span>
+        <div class="row-info">
+          <div class="row-name">${def.name} <span class="row-owned">(×${state.upgrades[def.id] || 0})</span></div>
+          <div class="row-desc">${def.flavor}</div>
+        </div>
+        <div class="row-cost">${fmt(getEffectiveCost(state, def))} LoC</div>
+      `;
+      row.addEventListener('click', () => {
+        if (handlers.buyUpgrade(def.id)) {
+          sfxBuy();
+          flashRow(row);
+          renderShop();
+          updateAll();
+          notify(`Hired ${def.name}!`);
+        }
+      });
+    }
     panel.appendChild(row);
   }
   updateShopAffordability();
@@ -177,7 +191,7 @@ function renderShop() {
 function updateShopAffordability() {
   for (const def of UPGRADE_DEFS) {
     const row = document.querySelector(`.shop-row[data-id="${def.id}"]`);
-    if (!row) continue;
+    if (!row || row.classList.contains('locked')) continue;
     const cost = getEffectiveCost(state, def);
     row.classList.toggle('cannot-afford', state.loc < cost);
     row.querySelector('.row-owned').textContent = `(×${state.upgrades[def.id] || 0})`;
@@ -190,34 +204,45 @@ function renderItems() {
   const panel = $('panel-items');
   panel.innerHTML = '<div class="panel-header">Feed your dev</div>';
   for (const item of FEED_ITEMS) {
+    const locked = state.level < (item.minLevel || 1);
     const row = document.createElement('div');
-    row.className = 'item-row';
+    row.className = 'item-row' + (locked ? ' locked' : '');
     row.dataset.id = item.id;
-    const costText = item.cost > 0 ? `${item.cost} LoC` : 'Free';
-    row.innerHTML = `
-      <span class="row-icon">${item.emoji}</span>
-      <div class="row-info">
-        <div class="row-name">${item.label}</div>
-        <div class="row-desc">+${item.amount} ${item.need}${item.alsoCaffeine ? ` +${item.alsoCaffeine} caffeine` : ''}</div>
-      </div>
-      <div class="row-cost">${costText}</div>
-    `;
-    row.addEventListener('click', () => {
-      if (handlers.feedItem(item.id)) {
-        sfxFeed();
-        flashRow(row);
-        // Feed flash on the need icon
-        const needEl = document.querySelector(`[data-need="${item.need}"]`);
-        if (needEl) {
-          needEl.classList.remove('feed-flash');
-          void needEl.offsetWidth;
-          needEl.classList.add('feed-flash');
-          setTimeout(() => needEl.classList.remove('feed-flash'), 300);
+    if (locked) {
+      row.innerHTML = `
+        <span class="row-icon">${item.emoji}</span>
+        <div class="row-info">
+          <div class="row-name">${item.label}</div>
+          <div class="row-desc">🔒 Unlocks at Lv.${item.minLevel}</div>
+        </div>
+        <div class="row-cost"></div>
+      `;
+    } else {
+      const costText = item.cost > 0 ? `${item.cost} LoC` : 'Free';
+      row.innerHTML = `
+        <span class="row-icon">${item.emoji}</span>
+        <div class="row-info">
+          <div class="row-name">${item.label}</div>
+          <div class="row-desc">+${item.amount} ${item.need}${item.alsoCaffeine ? ` +${item.alsoCaffeine} caffeine` : ''}</div>
+        </div>
+        <div class="row-cost">${costText}</div>
+      `;
+      row.addEventListener('click', () => {
+        if (handlers.feedItem(item.id)) {
+          sfxFeed();
+          flashRow(row);
+          const needEl = document.querySelector(`[data-need="${item.need}"]`);
+          if (needEl) {
+            needEl.classList.remove('feed-flash');
+            void needEl.offsetWidth;
+            needEl.classList.add('feed-flash');
+            setTimeout(() => needEl.classList.remove('feed-flash'), 300);
+          }
+          updateAll();
+          notify(`Used ${item.label}!`);
         }
-        updateAll();
-        notify(`Used ${item.label}!`);
-      }
-    });
+      });
+    }
     panel.appendChild(row);
   }
 }
@@ -225,7 +250,7 @@ function renderItems() {
 function updateItemAffordability() {
   for (const item of FEED_ITEMS) {
     const row = document.querySelector(`.item-row[data-id="${item.id}"]`);
-    if (!row) continue;
+    if (!row || row.classList.contains('locked')) continue;
     row.classList.toggle('cannot-afford', state.loc < item.cost);
   }
 }
@@ -235,25 +260,37 @@ function renderSkills() {
   const panel = $('panel-skills');
   panel.innerHTML = `<div class="panel-header">Skills <span id="skill-points-display">(${state.skillPoints} points)</span></div>`;
   for (const def of SKILL_DEFS) {
+    const locked = state.level < (def.minLevel || 1);
     const row = document.createElement('div');
-    row.className = 'skill-row';
+    row.className = 'skill-row' + (locked ? ' locked' : '');
     row.dataset.id = def.id;
-    row.innerHTML = `
-      <span class="row-icon">${def.emoji}</span>
-      <div class="row-info">
-        <div class="row-name">${def.name} <span class="row-owned">Lv.${state.skills[def.id]}</span></div>
-        <div class="row-desc">${def.desc}</div>
-      </div>
-      <div class="row-cost">1 pt</div>
-    `;
-    row.addEventListener('click', () => {
-      if (handlers.spendSkillPoint(def.id)) {
-        sfxBuy();
-        renderSkills();
-        updateAll();
-        notify(`${def.name} leveled up!`);
-      }
-    });
+    if (locked) {
+      row.innerHTML = `
+        <span class="row-icon">${def.emoji}</span>
+        <div class="row-info">
+          <div class="row-name">${def.name}</div>
+          <div class="row-desc">🔒 Unlocks at Lv.${def.minLevel}</div>
+        </div>
+        <div class="row-cost"></div>
+      `;
+    } else {
+      row.innerHTML = `
+        <span class="row-icon">${def.emoji}</span>
+        <div class="row-info">
+          <div class="row-name">${def.name} <span class="row-owned">Lv.${state.skills[def.id]}</span></div>
+          <div class="row-desc">${def.desc}</div>
+        </div>
+        <div class="row-cost">1 pt</div>
+      `;
+      row.addEventListener('click', () => {
+        if (handlers.spendSkillPoint(def.id)) {
+          sfxBuy();
+          renderSkills();
+          updateAll();
+          notify(`${def.name} leveled up!`);
+        }
+      });
+    }
     panel.appendChild(row);
   }
 }
@@ -263,7 +300,7 @@ function updateSkills() {
   if (display) display.textContent = `(${state.skillPoints} points)`;
   for (const def of SKILL_DEFS) {
     const row = document.querySelector(`.skill-row[data-id="${def.id}"]`);
-    if (!row) continue;
+    if (!row || row.classList.contains('locked')) continue;
     row.querySelector('.row-owned').textContent = `Lv.${state.skills[def.id]}`;
     row.classList.toggle('cannot-afford', state.skillPoints <= 0);
   }
@@ -276,28 +313,40 @@ function renderEquipment() {
   for (const [slot, items] of Object.entries(EQUIPMENT_DEFS)) {
     panel.innerHTML += `<div class="panel-header">${slot}</div>`;
     for (const item of items) {
+      const locked = state.level < (item.minLevel || 1);
       const equipped = state.equipment[slot] === item.id;
       const row = document.createElement('div');
-      row.className = 'equip-row' + (equipped ? ' equipped' : '');
+      row.className = 'equip-row' + (equipped ? ' equipped' : '') + (locked ? ' locked' : '');
       row.dataset.slot = slot;
       row.dataset.id = item.id;
-      row.innerHTML = `
-        <span class="row-icon">${item.emoji}</span>
-        <div class="row-info">
-          <div class="row-name">${item.name} ${equipped ? '✅' : ''}</div>
-          <div class="row-desc">${item.desc}</div>
-        </div>
-        <div class="row-cost">${equipped ? 'Equipped' : fmt(item.cost) + ' LoC'}</div>
-      `;
-      if (!equipped) {
-        row.addEventListener('click', () => {
-          if (handlers.buyEquipment(slot, item.id)) {
-            sfxBuy();
-            renderEquipment();
-            updateAll();
-            notify(`Equipped ${item.name}!`);
-          }
-        });
+      if (locked) {
+        row.innerHTML = `
+          <span class="row-icon">${item.emoji}</span>
+          <div class="row-info">
+            <div class="row-name">${item.name}</div>
+            <div class="row-desc">🔒 Unlocks at Lv.${item.minLevel}</div>
+          </div>
+          <div class="row-cost"></div>
+        `;
+      } else {
+        row.innerHTML = `
+          <span class="row-icon">${item.emoji}</span>
+          <div class="row-info">
+            <div class="row-name">${item.name} ${equipped ? '✅' : ''}</div>
+            <div class="row-desc">${item.desc}</div>
+          </div>
+          <div class="row-cost">${equipped ? 'Equipped' : fmt(item.cost) + ' LoC'}</div>
+        `;
+        if (!equipped) {
+          row.addEventListener('click', () => {
+            if (handlers.buyEquipment(slot, item.id)) {
+              sfxBuy();
+              renderEquipment();
+              updateAll();
+              notify(`Equipped ${item.name}!`);
+            }
+          });
+        }
       }
       panel.appendChild(row);
     }
@@ -309,7 +358,7 @@ function updateEquipment() {
   for (const [slot, items] of Object.entries(EQUIPMENT_DEFS)) {
     for (const item of items) {
       const row = document.querySelector(`.equip-row[data-slot="${slot}"][data-id="${item.id}"]`);
-      if (!row) continue;
+      if (!row || row.classList.contains('locked')) continue;
       const equipped = state.equipment[slot] === item.id;
       if (!equipped) {
         row.classList.toggle('cannot-afford', state.loc < item.cost);
@@ -860,6 +909,60 @@ export function updateCodeReview() {
     });
     optionsContainer.appendChild(btn);
   });
+}
+
+// --- Standup Roulette ---
+function updateStandup() {
+  // Update the queue button
+  const queueBtn = $('standup-btn');
+  if (queueBtn) {
+    const queueLen = (state.standupQueue || []).length;
+    queueBtn.textContent = `\u{1F399}\uFE0F Standup (${queueLen})`;
+    queueBtn.disabled = queueLen === 0;
+  }
+
+  const overlay = $('standup-overlay');
+  if (!isStandupActive(state)) {
+    overlay.classList.add('hidden');
+    return;
+  }
+
+  overlay.classList.remove('hidden');
+  const su = state.standup;
+  const elapsed = Date.now() - su.startTime;
+  const remaining = Math.max(0, Math.ceil((su.timeLimit - elapsed) / 1000));
+
+  $('standup-timer').textContent = `\u23F1\uFE0F ${remaining}s`;
+  $('standup-task').textContent = `"${su.prompt.task}"`;
+
+  const buzzContainer = $('standup-buzzwords');
+  buzzContainer.innerHTML = '';
+  su.prompt.buzzwords.forEach((word, index) => {
+    const chip = document.createElement('button');
+    chip.className = 'buzzword-chip' + (su.selected.includes(index) ? ' selected' : '');
+    chip.textContent = word;
+    chip.addEventListener('click', () => {
+      if (handlers.toggleBuzzword) {
+        handlers.toggleBuzzword(index);
+        updateStandup();
+      }
+    });
+    buzzContainer.appendChild(chip);
+  });
+}
+
+export function showStandupResult(result) {
+  if (!result) return;
+
+  if (result.managerSpawned) {
+    notify(`\u{1F454} ${result.message} A Manager appeared!`, 'notif-enemy');
+    screenFlash('flash-damage');
+  } else if (result.xp > 0) {
+    notify(`\u{1F399}\uFE0F ${result.message} +${result.xp}XP +${result.loc}LoC`, 'notif-level');
+    screenFlash('flash-level');
+  } else {
+    notify(`\u{1F399}\uFE0F ${result.message}`, 'notif-enemy');
+  }
 }
 
 export function showCodeReviewResult(result) {

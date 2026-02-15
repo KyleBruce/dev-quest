@@ -34,6 +34,7 @@
       <button id="click-btn" type="button">TAP TO CODE</button>
       <div id="auto-rate">+0.0 LoC/sec</div>
       <button id="code-review-btn" type="button" class="code-review-btn" disabled>🔍 Code Review (0)</button>
+      <button id="standup-btn" type="button" class="standup-btn" disabled>🎙️ Standup (0)</button>
     </section>
 
     <!-- Needs bars -->
@@ -121,6 +122,23 @@
         <div id="welcome-back-time" class="welcome-back-detail"></div>
         <div id="welcome-back-earned" class="welcome-back-earned"></div>
         <button id="welcome-back-btn" type="button">Collect</button>
+      </div>
+    </div>
+
+    <!-- Standup overlay -->
+    <div id="standup-overlay" class="hidden">
+      <div id="standup-popup">
+        <div class="standup-header">
+          <span class="standup-icon">🎙️</span>
+          <span id="standup-title">Daily Standup</span>
+          <span id="standup-timer"></span>
+        </div>
+        <div id="standup-task" class="standup-task"></div>
+        <div id="standup-buzzwords" class="buzzword-grid"></div>
+        <div class="standup-actions">
+          <button id="standup-submit" type="button" class="standup-submit-btn">Present</button>
+          <button id="standup-skip" type="button" class="skip-btn">Skip</button>
+        </div>
       </div>
     </div>
 

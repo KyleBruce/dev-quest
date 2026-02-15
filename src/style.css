@@ -211,6 +211,39 @@ html, body {
   50% { box-shadow: 0 0 16px rgba(240, 192, 64, 0.5); }
 }
 
+/* Standup button */
+.standup-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 2px solid var(--green);
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+  animation: standupPulse 2s ease-in-out infinite;
+}
+
+.standup-btn:active:not(:disabled) {
+  transform: scale(0.95);
+  background: rgba(63, 185, 80, 0.25);
+}
+
+.standup-btn:disabled {
+  border-color: var(--dim);
+  color: var(--dim);
+  background: transparent;
+  cursor: default;
+  animation: none;
+  box-shadow: none;
+}
+
+@keyframes standupPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(63, 185, 80, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(63, 185, 80, 0.5); }
+}
+
 /* Needs bars */
 #needs-bar {
   display: flex;
@@ -323,6 +356,13 @@ html, body {
 .shop-row.cannot-afford, .item-row.cannot-afford, .equip-row.cannot-afford {
   opacity: 0.45;
 }
+
+.shop-row.locked, .item-row.locked, .skill-row.locked, .equip-row.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.locked .row-desc { color: var(--yellow); font-style: italic; }
 
 .shop-row.just-bought, .item-row.just-bought {
   animation: rowFlash 0.4s;
@@ -805,6 +845,117 @@ html, body {
 .skip-btn:hover {
   color: var(--text);
   border-color: var(--dim);
+}
+
+/* Standup overlay */
+#standup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+  backdrop-filter: blur(4px);
+}
+
+#standup-overlay.hidden { display: none; }
+
+#standup-popup {
+  background: var(--surface);
+  border: 2px solid var(--green);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.standup-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.standup-icon {
+  font-size: 24px;
+}
+
+#standup-title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--green);
+}
+
+#standup-timer {
+  font-size: 14px;
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+.standup-task {
+  font-size: 14px;
+  color: var(--dim);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.buzzword-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.buzzword-chip {
+  padding: 8px 14px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.buzzword-chip.selected {
+  border-color: var(--accent);
+  background: rgba(88,166,255,.15);
+  color: var(--accent);
+}
+
+.buzzword-chip:active {
+  transform: scale(0.95);
+}
+
+.standup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.standup-submit-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.standup-submit-btn:hover {
+  background: rgba(63, 185, 80, 0.25);
+}
+
+.standup-submit-btn:active {
+  transform: scale(0.98);
 }
 
 /* Career Progression */

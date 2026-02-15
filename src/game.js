@@ -4,6 +4,7 @@ import { maybeSpawnEnemy, enemyDamage, initEnemyTimer, isEnemyApproaching } from
 import { checkLevelUp } from './rpg.js';
 import { saveGame, loadGame } from './save.js';
 import { maybeSpawnCodeReview } from './code-review.js';
+import { maybeSpawnStandup } from './standup.js';
 import { checkMilestones } from './milestones.js';
 import { getCareerRate } from './career.js';
 
@@ -16,7 +17,7 @@ export function createDefaultState() {
     level: 1,
     xp: 0,
     skillPoints: 0,
-    skills: { typingSpeed: 0, codeReview: 0, bugResistance: 0, caffeineMetabolism: 0 },
+    skills: { typingSpeed: 0, codeReview: 0, bugResistance: 0, caffeineMetabolism: 0, gitFu: 0, mentalFortitude: 0 },
     equipment: { keyboard: null, chair: null, monitor: null },
     enemy: null,
     enemyTimer: 0,
@@ -29,6 +30,9 @@ export function createDefaultState() {
     // Code Review
     codeReview: null,
     codeReviewQueue: [],
+    // Standup Roulette
+    standup: null,
+    standupQueue: [],
     // Career Progression
     careerStage: 'junior',
     projects: 0,
@@ -103,6 +107,9 @@ export function tick(state, onUpdate) {
   // 7. Maybe spawn code review
   const codeReviewSpawned = maybeSpawnCodeReview(state);
 
+  // 7b. Maybe spawn standup
+  const standupSpawned = maybeSpawnStandup(state);
+
   // 8. Enemy warning
   const enemyWarning = isEnemyApproaching(state);
 
@@ -112,7 +119,7 @@ export function tick(state, onUpdate) {
   }
 
   // 10. Return info for UI
-  return { napping, dmg, leveled, newMilestones, codeReviewSpawned, enemyWarning, careerIncome };
+  return { napping, dmg, leveled, newMilestones, codeReviewSpawned, standupSpawned, enemyWarning, careerIncome };
 }
 
 export function startGameLoop(state, onTick) {

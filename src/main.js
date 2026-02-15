@@ -8,9 +8,10 @@ import { spendSkillPoint, buyEquipment } from './rpg.js';
 import { doPrestige } from './prestige.js';
 import { saveGame } from './save.js';
 import { sfxClick } from './sound.js';
-import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender, showCodeReviewResult, showWelcomeBack, showMilestone, updateEnemyWarning } from './ui.js';
+import { initUI, updateAll, updateEnemy, showClickFloat, showEnemyHit, showEnemyDefeated, showEnemyDamage, showLevelUp, fullRerender, showCodeReviewResult, showStandupResult, showWelcomeBack, showMilestone, updateEnemyWarning } from './ui.js';
 import { shouldShowOnboarding, startOnboarding } from './onboarding.js';
 import { answerCodeReview, skipCodeReview, startCodeReview } from './code-review.js';
+import { startStandup, submitStandup, skipStandup, toggleBuzzword } from './standup.js';
 import { promote, hireTeamMember } from './career.js';
 import { DEBUG_MODE, applyDebugModifiers, createDebugPanel } from './debug.js';
 
@@ -29,6 +30,10 @@ const handlers = {
   prestige: () => doPrestige(state),
   answerCodeReview: (index) => answerCodeReview(state, index),
   startCodeReview: () => startCodeReview(state),
+  startStandup: () => startStandup(state),
+  submitStandup: () => submitStandup(state),
+  skipStandup: () => skipStandup(state),
+  toggleBuzzword: (i) => toggleBuzzword(state, i),
   promote: () => promote(state),
   hireTeamMember: () => hireTeamMember(state),
 };
@@ -80,10 +85,30 @@ document.getElementById('code-review-btn').addEventListener('click', () => {
   }
 });
 
+// Standup start button
+document.getElementById('standup-btn').addEventListener('click', () => {
+  if (startStandup(state)) {
+    updateAll();
+  }
+});
+
+// Standup skip button
+document.getElementById('standup-skip').addEventListener('click', () => {
+  skipStandup(state);
+  updateAll();
+});
+
+// Standup submit button
+document.getElementById('standup-submit').addEventListener('click', () => {
+  const result = submitStandup(state);
+  showStandupResult(result);
+  updateAll();
+});
+
 // Game loop
 startGameLoop(state, (info) => {
   updateAll();
-  if (info.leveled) showLevelUp();
+  if (info.leveled) { showLevelUp(); fullRerender(); }
   if (info.dmg > 0) showEnemyDamage();
   if (info.newMilestones) {
     for (const m of info.newMilestones) showMilestone(m);
