@@ -9,24 +9,29 @@ export const TITLES = [
 ];
 
 export const SKILL_DEFS = [
-  { id: 'typingSpeed',       name: 'Typing Speed',       emoji: '⌨️', desc: '+10% click power per level' },
-  { id: 'codeReview',        name: 'Automation',         emoji: '🤖', desc: '+10% auto-output per level' },
-  { id: 'bugResistance',     name: 'Bug Resistance',     emoji: '🛡️', desc: 'Enemies deal 10% less damage per level' },
-  { id: 'caffeineMetabolism', name: 'Caffeine Metabolism', emoji: '☕', desc: 'Caffeine decays 15% slower per level' },
+  { id: 'typingSpeed',       name: 'Typing Speed',       emoji: '⌨️', desc: '+10% click power per level', minLevel: 1 },
+  { id: 'codeReview',        name: 'Automation',         emoji: '🤖', desc: '+10% auto-output per level', minLevel: 1 },
+  { id: 'bugResistance',     name: 'Bug Resistance',     emoji: '🛡️', desc: 'Enemies deal 10% less damage per level', minLevel: 1 },
+  { id: 'caffeineMetabolism', name: 'Caffeine Metabolism', emoji: '☕', desc: 'Caffeine decays 15% slower per level', minLevel: 1 },
+  { id: 'gitFu',             name: 'Git Fu',             emoji: '🥋', desc: 'Enemies spawn 5% slower per level', minLevel: 10 },
+  { id: 'mentalFortitude',   name: 'Mental Fortitude',   emoji: '🧠', desc: 'All needs decay 5% slower per level', minLevel: 20 },
 ];
 
 export const EQUIPMENT_DEFS = {
   keyboard: [
-    { id: 'mechanical', name: 'Mechanical Keyboard', emoji: '⌨️', cost: 50,   desc: '+20% click power' },
-    { id: 'ergonomic',  name: 'Ergonomic Keyboard',  emoji: '🎹', cost: 80,   desc: '+10% clicks, -10% energy decay' },
+    { id: 'mechanical', name: 'Mechanical Keyboard', emoji: '⌨️', cost: 50,   desc: '+20% click power', minLevel: 1 },
+    { id: 'ergonomic',  name: 'Ergonomic Keyboard',  emoji: '🎹', cost: 80,   desc: '+10% clicks, -10% energy decay', minLevel: 1 },
+    { id: 'split',      name: 'Split Keyboard',      emoji: '⌨️', cost: 200,  desc: '+25% click power, -5% energy decay', minLevel: 5 },
   ],
   chair: [
-    { id: 'gaming',   name: 'Gaming Chair',  emoji: '🪑', cost: 120,  desc: '-15% happiness decay' },
-    { id: 'standing', name: 'Standing Desk',  emoji: '🧍', cost: 150,  desc: '-10% energy decay' },
+    { id: 'gaming',   name: 'Gaming Chair',  emoji: '🪑', cost: 120,  desc: '-15% happiness decay', minLevel: 1 },
+    { id: 'standing', name: 'Standing Desk',  emoji: '🧍', cost: 150,  desc: '-10% energy decay', minLevel: 1 },
+    { id: 'herman',   name: 'Herman Miller',  emoji: '💺', cost: 500,  desc: '-20% happiness decay, -15% energy decay', minLevel: 10 },
   ],
   monitor: [
-    { id: 'ultrawide', name: 'Ultrawide Monitor', emoji: '🖥️', cost: 300,  desc: '+15% all output' },
-    { id: 'triple',    name: 'Triple Monitor',    emoji: '🖥️', cost: 800,  desc: '+25% all output' },
+    { id: 'ultrawide', name: 'Ultrawide Monitor', emoji: '🖥️', cost: 300,  desc: '+15% all output', minLevel: 1 },
+    { id: 'triple',    name: 'Triple Monitor',    emoji: '🖥️', cost: 800,  desc: '+25% all output', minLevel: 1 },
+    { id: 'vr',        name: 'VR Headset',        emoji: '🥽', cost: 2000, desc: '+35% all output, +10% click power', minLevel: 35 },
   ],
 };
 

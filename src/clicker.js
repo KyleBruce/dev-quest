@@ -5,11 +5,13 @@ export function getClickPower(state) {
   const kb = state.equipment.keyboard;
   if (kb === 'mechanical') power *= 1.2;
   else if (kb === 'ergonomic') power *= 1.1;
+  else if (kb === 'split') power *= 1.25;
 
   // Monitor bonus (all output)
   const mon = state.equipment.monitor;
   if (mon === 'ultrawide') power *= 1.15;
   else if (mon === 'triple') power *= 1.25;
+  else if (mon === 'vr') power *= 1.1;
 
   // Caffeine bonus: +50% above 70
   if (state.needs.caffeine > 70) power *= 1.5;

@@ -28,7 +28,10 @@ export function maybeSpawnEnemy(state) {
     currentHp: def.hp,
   };
   state.enemyTimer = 0;
-  state.nextEnemyAt = SPAWN_MIN + Math.floor(Math.random() * (SPAWN_MAX - SPAWN_MIN));
+  let spawnDelay = SPAWN_MIN + Math.floor(Math.random() * (SPAWN_MAX - SPAWN_MIN));
+  // Git Fu skill: enemies spawn 5% slower per level
+  if (state.skills.gitFu > 0) spawnDelay = Math.floor(spawnDelay * (1 + state.skills.gitFu * 0.05));
+  state.nextEnemyAt = spawnDelay;
 }
 
 export function hitEnemy(state) {
